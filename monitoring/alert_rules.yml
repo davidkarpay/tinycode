@@ -1,0 +1,97 @@
+groups:
+  - name: tinyllama-alerts
+    rules:
+      # API Health Alerts
+      - alert: TinyLlamaAPIDown
+        expr: up{job="tinyllama-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "TinyLlama API is down"
+          description: "TinyLlama API has been down for more than 1 minute."
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} errors per second."
+
+      # Resource Alerts
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes / 1024 / 1024 > 1800
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value }}MB, approaching limit."
+
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total[5m]) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value }}%."
+
+      - alert: TooManyOpenFiles
+        expr: process_open_fds > 4000
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Too many open file descriptors"
+          description: "{{ $value }} file descriptors are open, approaching limit."
+
+      # Rate Limiting Alerts
+      - alert: HighRateLimitRejections
+        expr: rate(rate_limit_rejections_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate limit rejections"
+          description: "{{ $value }} requests per second are being rate limited."
+
+      # Redis Alerts
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis has been down for more than 1 minute."
+
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis high memory usage"
+          description: "Redis memory usage is {{ $value | humanizePercentage }}."
+
+      # Node Alerts
+      - alert: HighDiskUsage
+        expr: (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_free_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} > 0.85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk usage"
+          description: "Disk usage is {{ $value | humanizePercentage }}."
+
+      - alert: LoadAverage
+        expr: node_load1 > 2
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High load average"
+          description: "Load average is {{ $value }}."

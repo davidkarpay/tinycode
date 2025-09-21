@@ -1,0 +1,85 @@
+# RAG System Configuration
+
+# Embedding settings
+embedding:
+  model: "all-MiniLM-L6-v2"  # Local sentence transformer model
+  dimension: 384
+  normalize: true
+  cache_dir: "data/embeddings_cache"
+  batch_size: 32
+
+# Vector store settings
+vector_store:
+  type: "faiss"
+  index_type: "IVF"  # IVF, HNSW, or Flat
+  metric: "L2"       # L2 or IP (inner product)
+  nlist: 4096        # Number of clusters for IVF
+  nprobe: 16         # Number of clusters to search
+  store_path: "data/index/faiss"
+
+# Text chunking settings
+chunking:
+  default_size: 800
+  overlap: 100
+  max_size: 1200
+  min_size: 100
+  strategies:
+    adaptive: true
+    semantic: true
+    heading: true
+    code: true
+  tokenizer: "cl100k_base"
+
+# Retrieval settings
+retrieval:
+  hybrid_alpha: 0.7  # Dense vs sparse weight (0.7 dense, 0.3 sparse)
+  top_k: 10
+  rerank: false
+  bm25:
+    k1: 1.5
+    b: 0.75
+
+# LLM settings
+llm:
+  primary_model: "tinyllama:latest"
+  summarization_model: "tinyllama:latest"
+  temperature: 0.7
+  max_tokens: 2048
+  timeout: 60
+
+# Knowledge bases
+knowledge_bases:
+  general:
+    enabled: true
+    auto_load: false
+  genetics:
+    enabled: true
+    auto_load: false
+    priority: 10
+  code:
+    enabled: true
+    auto_load: false
+    priority: 8
+
+# Genetics corpus settings
+genetics_corpus:
+  max_pages_per_source: 50
+  crawl_delay: 1.0
+  max_concurrent: 10
+  respect_robots: true
+  output_dir: "data/genetics_corpus"
+
+# Data directories
+data:
+  base_dir: "data"
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  index_dir: "data/index"
+  cache_dir: "data/cache"
+
+# Logging
+logging:
+  level: "INFO"
+  file: "logs/rag_system.log"
+  max_size: "10MB"
+  backup_count: 5

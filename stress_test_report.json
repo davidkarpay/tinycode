@@ -1,0 +1,233 @@
+{
+  "timestamp": "2025-09-20T21:16:37.952686",
+  "score": 81.43,
+  "results": {
+    "stress_test_resource_limits": {
+      "module": "stress_test_resource_limits",
+      "status": "completed",
+      "tests": [
+        {
+          "test": "Memory Exhaustion",
+          "vulnerability": "Memory DoS",
+          "passed": true,
+          "details": "Memory usage controlled"
+        },
+        {
+          "test": "Timeout Mechanism",
+          "vulnerability": "Timeout Bypass",
+          "passed": true,
+          "details": "Timeout properly enforced"
+        },
+        {
+          "test": "File Handle Exhaustion",
+          "vulnerability": "Resource Exhaustion",
+          "passed": false,
+          "details": "Allowed 10000 open files"
+        },
+        {
+          "test": "Concurrent Execution",
+          "vulnerability": "Thread Exhaustion",
+          "passed": true,
+          "details": "Handled 100 concurrent plans in 0.1s"
+        },
+        {
+          "test": "Recursive Operations",
+          "vulnerability": "Stack Overflow",
+          "passed": true,
+          "details": "RecursionError caught - stack protected"
+        },
+        {
+          "test": "Large File Processing",
+          "vulnerability": "Resource Exhaustion",
+          "passed": true,
+          "details": "File size limit (10MB) enforced"
+        },
+        {
+          "test": "Rate Limiting",
+          "vulnerability": "DoS via Rapid Operations",
+          "passed": false,
+          "details": "Allowed 2646 ops/second"
+        }
+      ],
+      "passed": 5,
+      "failed": 2,
+      "error": null,
+      "duration": 4.555821180343628
+    },
+    "stress_test_edge_cases": {
+      "module": "stress_test_edge_cases",
+      "status": "completed",
+      "tests": [
+        {
+          "test": "Empty Input: Empty string",
+          "passed": true,
+          "details": "Handled gracefully"
+        },
+        {
+          "test": "Empty Input: None value",
+          "passed": true,
+          "details": "None handled"
+        },
+        {
+          "test": "Empty Input: Whitespace only",
+          "passed": true,
+          "details": "Handled gracefully"
+        },
+        {
+          "test": "Empty Input: Newlines only",
+          "passed": true,
+          "details": "Handled gracefully"
+        },
+        {
+          "test": "Empty Input: Tabs only",
+          "passed": true,
+          "details": "Handled gracefully"
+        },
+        {
+          "test": "Empty Input: Null byte",
+          "passed": true,
+          "details": "Handled gracefully"
+        },
+        {
+          "test": "Unicode: Hello \u4e16\u754c \ud83c\udf0d...",
+          "passed": true,
+          "details": "Exception handled: 'SafetyConfig' object has no attribute 'config'"
+        },
+        {
+          "test": "Unicode: \u0645\u0631\u062d\u0628\u0627 \u05e2\u05d5\u05dc\u05dd...",
+          "passed": true,
+          "details": "Exception handled: 'SafetyConfig' object has no attribute 'config'"
+        },
+        {
+          "test": "Unicode: \u00c0\u0334\u0335\u0336\u0337\u0338\u0321\u0322\u0327\u0328\u031b\u0316\u0317\u0318\u0319\u031c\u031d\u031e\u031f\u0320...",
+          "passed": true,
+          "details": "Exception handled: 'SafetyConfig' object has no attribute 'config'"
+        },
+        {
+          "test": "Unicode: test\u0000file.txt...",
+          "passed": true,
+          "details": "Exception handled: 'SafetyConfig' object has no attribute 'config'"
+        },
+        {
+          "test": "Unicode: ../../\u202e/etc/passwd...",
+          "passed": true,
+          "details": "Exception handled: 'SafetyConfig' object has no attribute 'config'"
+        },
+        {
+          "test": "Unicode: file\ufeff.txt...",
+          "passed": true,
+          "details": "Exception handled: 'SafetyConfig' object has no attribute 'config'"
+        },
+        {
+          "test": "Unicode: test\u200bfile.txt...",
+          "passed": true,
+          "details": "Exception handled: 'SafetyConfig' object has no attribute 'config'"
+        },
+        {
+          "test": "Race Condition: Mode Switching",
+          "passed": true,
+          "details": "Mode state consistent"
+        },
+        {
+          "test": "Circular Dependencies",
+          "passed": true,
+          "details": "Exception prevented: 'SafetyConfig' object has no attribute 'config'"
+        },
+        {
+          "test": "Boundary: Zero value",
+          "passed": true,
+          "details": "Exception handled: name 'time' is not defined"
+        },
+        {
+          "test": "Boundary: Negative value",
+          "passed": true,
+          "details": "Exception handled: name 'time' is not defined"
+        },
+        {
+          "test": "Boundary: Max int32",
+          "passed": true,
+          "details": "Large value handled"
+        },
+        {
+          "test": "Boundary: Max int64",
+          "passed": true,
+          "details": "Large value handled"
+        },
+        {
+          "test": "Boundary: Infinity",
+          "passed": true,
+          "details": "Exception handled: name 'time' is not defined"
+        },
+        {
+          "test": "Boundary: Negative infinity",
+          "passed": true,
+          "details": "Exception handled: name 'time' is not defined"
+        },
+        {
+          "test": "Boundary: NaN value",
+          "passed": true,
+          "details": "Large value handled"
+        },
+        {
+          "test": "Invalid JSON",
+          "passed": true,
+          "details": "Properly rejected malformed JSON"
+        },
+        {
+          "test": "Invalid JSON",
+          "passed": true,
+          "details": "Properly rejected malformed JSON"
+        },
+        {
+          "test": "Invalid JSON",
+          "passed": true,
+          "details": "Properly rejected malformed JSON"
+        },
+        {
+          "test": "Invalid JSON",
+          "passed": true,
+          "details": "Properly rejected malformed JSON"
+        },
+        {
+          "test": "Invalid JSON",
+          "passed": false,
+          "details": "Accepted malformed: NaN"
+        },
+        {
+          "test": "Invalid JSON",
+          "passed": true,
+          "details": "Properly rejected malformed JSON"
+        }
+      ],
+      "passed": 27,
+      "failed": 1,
+      "error": null,
+      "duration": 0.14018011093139648
+    },
+    "stress_test_security": {
+      "module": "stress_test_security",
+      "status": "error",
+      "tests": [],
+      "passed": 0,
+      "failed": 0,
+      "error": "'SafetyConfig' object has no attribute 'config'",
+      "duration": 0
+    }
+  },
+  "vulnerabilities": [
+    {
+      "module": "stress_test_resource_limits",
+      "test": "File Handle Exhaustion",
+      "vulnerability": "Resource Exhaustion",
+      "details": "Allowed 10000 open files"
+    },
+    {
+      "module": "stress_test_resource_limits",
+      "test": "Rate Limiting",
+      "vulnerability": "DoS via Rapid Operations",
+      "details": "Allowed 2646 ops/second"
+    }
+  ],
+  "critical_issues": [],
+  "duration": 4.8849570751190186
+}

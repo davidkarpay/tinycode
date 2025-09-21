@@ -1,0 +1,63 @@
+# Core dependencies
+ollama
+click
+rich
+prompt_toolkit
+pygments
+
+# RAG dependencies
+sentence-transformers>=2.2.0
+faiss-cpu>=1.7.4
+langchain>=0.1.0
+langchain-community>=0.0.10
+chromadb>=0.4.0
+pypdf>=3.17.0
+python-docx>=1.1.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+markdown>=3.5.0
+python-magic>=0.4.27
+tiktoken>=0.5.0
+
+# Document processing
+pymupdf>=1.23.0
+pdfplumber>=0.10.0
+python-pptx>=0.6.21
+openpyxl>=3.1.2
+pandas>=2.0.0
+
+# Genetics-specific
+biopython>=1.81
+pysam>=0.21.0
+pyvcf3>=1.0.3
+
+# Search and ranking
+rank-bm25>=0.2.2
+scikit-learn>=1.3.0
+numpy>=1.24.0
+
+# Storage and caching
+sqlalchemy>=2.0.0
+diskcache>=5.6.0
+
+# Utils
+pyyaml>=6.0
+python-dotenv>=1.0.0
+tqdm>=4.66.0
+requests>=2.31.0
+aiohttp>=3.9.0
+aiofiles>=23.2.0
+
+# Production Dependencies
+flask>=2.3.0
+flask-cors>=4.0.0
+gunicorn>=21.0.0
+prometheus_client>=0.17.0
+psutil>=5.9.0
+redis>=4.5.0
+werkzeug>=2.3.0
+itsdangerous>=2.1.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0

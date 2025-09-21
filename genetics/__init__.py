@@ -1,0 +1,1 @@
+"""Genetics knowledge base components"""

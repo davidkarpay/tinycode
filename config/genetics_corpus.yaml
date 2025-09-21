@@ -1,0 +1,189 @@
+# Genetics Corpus Sources Configuration
+# Based on the high-quality genetics/bioinformatics documentation
+
+sources:
+  # Core specifications (highest priority)
+  hts_specs:
+    name: "HTS Format Specifications"
+    priority: 10
+    base_urls:
+      - "https://samtools.github.io/hts-specs/"
+      - "https://samtools.github.io/hts-specs/SAMv1.pdf"
+      - "https://samtools.github.io/hts-specs/VCFv4.2.pdf"
+      - "https://samtools.github.io/hts-specs/BEDv1.pdf"
+    allow_patterns:
+      - "/SAM*"
+      - "/VCF*"
+      - "/BCF*"
+      - "/CRAM*"
+      - "/BED*"
+      - "/htsget*"
+      - "/refget*"
+      - "/crypt4gh*"
+    deny_patterns:
+      - "/issues"
+      - "/pulls"
+      - "/actions"
+    max_depth: 2
+
+  # Tool documentation
+  samtools:
+    name: "SAMtools Documentation"
+    priority: 9
+    base_urls:
+      - "https://www.htslib.org/doc/samtools.html"
+      - "https://samtools.github.io/bcftools/bcftools.html"
+    allow_patterns:
+      - "/doc/*"
+      - "/manual/*"
+    max_depth: 1
+
+  gatk:
+    name: "GATK Best Practices"
+    priority: 9
+    base_urls:
+      - "https://gatk.broadinstitute.org/hc/en-us/sections/360007226651-Best-Practices-Workflows"
+    allow_patterns:
+      - "/hc/en-us/sections/*Best-Practices*"
+      - "/hc/en-us/articles/*"
+      - "/hc/en-us/categories/*Workflows*"
+    deny_patterns:
+      - "/community"
+    max_depth: 2
+
+  bedtools:
+    name: "bedtools Documentation"
+    priority: 8
+    base_urls:
+      - "https://bedtools.readthedocs.io/en/latest/"
+    allow_patterns:
+      - "/en/latest/*"
+    max_depth: 2
+
+  # Reference databases
+  ncbi_refseq:
+    name: "NCBI RefSeq"
+    priority: 7
+    base_urls:
+      - "https://www.ncbi.nlm.nih.gov/refseq/"
+    allow_patterns:
+      - "/about*"
+      - "/faq*"
+      - "/help*"
+    deny_patterns:
+      - "/downloads*"
+    max_depth: 1
+
+  clinvar:
+    name: "ClinVar Documentation"
+    priority: 7
+    base_urls:
+      - "https://www.ncbi.nlm.nih.gov/clinvar/docs/help/"
+    allow_patterns:
+      - "/docs/help/*"
+      - "/docs/faq/*"
+    deny_patterns:
+      - "/variation*"
+      - "/rcv*"
+    max_depth: 2
+
+  # Ontologies and nomenclature
+  hgvs:
+    name: "HGVS Nomenclature"
+    priority: 8
+    base_urls:
+      - "https://hgvs-nomenclature.org/"
+      - "https://varnomen.hgvs.org/"
+    allow_patterns:
+      - "/recommendations*"
+      - "/mutnomen*"
+    max_depth: 2
+
+  ga4gh_vrs:
+    name: "GA4GH VRS"
+    priority: 7
+    base_urls:
+      - "https://vrs.ga4gh.org/"
+    allow_patterns:
+      - "/en*"
+      - "/schema*"
+      - "/guide*"
+    max_depth: 2
+
+  # Programming libraries
+  biopython:
+    name: "Biopython Documentation"
+    priority: 6
+    base_urls:
+      - "https://biopython.org/wiki/Documentation"
+      - "https://biopython.org/DIST/docs/tutorial/"
+    allow_patterns:
+      - "/wiki/Documentation"
+      - "/DIST/docs/tutorial/*"
+    max_depth: 2
+
+  # Workflow systems
+  nextflow:
+    name: "Nextflow Documentation"
+    priority: 5
+    base_urls:
+      - "https://www.nextflow.io/docs/latest/"
+    allow_patterns:
+      - "/docs/latest/*"
+    max_depth: 1
+
+  snakemake:
+    name: "Snakemake Documentation"
+    priority: 5
+    base_urls:
+      - "https://snakemake.readthedocs.io/"
+    allow_patterns:
+      - "/en/stable/*"
+      - "/en/latest/*"
+    max_depth: 2
+
+# Crawling settings
+crawl_settings:
+  delay_between_requests: 1.0
+  max_concurrent: 4
+  timeout: 30
+  retries: 2
+  user_agent: "TinyCodeRAG/1.0 (+genetics-research)"
+  respect_robots: true
+
+# Processing settings
+processing:
+  extract_pdf_text: true
+  max_file_size: "50MB"
+  supported_formats:
+    - ".html"
+    - ".htm"
+    - ".pdf"
+    - ".md"
+    - ".txt"
+
+# Quality filters
+quality:
+  min_content_length: 100
+  remove_navigation: true
+  remove_ads: true
+  extract_main_content: true
+  preserve_code_blocks: true
+  preserve_tables: true
+
+# Metadata to extract
+metadata:
+  required:
+    - "source_id"
+    - "title"
+    - "url"
+    - "crawled_at"
+  optional:
+    - "section"
+    - "anchor"
+    - "published_at"
+    - "updated_at"
+    - "license"
+    - "version"
+    - "genome_build"
+    - "coordinate_system"

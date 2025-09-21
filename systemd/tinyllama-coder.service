@@ -1,0 +1,55 @@
+[Unit]
+Description=TinyCode RAG-Enhanced Coding Assistant
+After=network.target
+Requires=network.target
+
+[Service]
+Type=simple
+User=tinyllama
+Group=tinyllama
+WorkingDirectory=/opt/tinyllama-coder
+Environment=PYTHONPATH=/opt/tinyllama-coder
+Environment=PYTHONUNBUFFERED=1
+Environment=FLASK_ENV=production
+ExecStart=/opt/tinyllama-coder/venv/bin/python api_server.py
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutSec=30
+
+# Resource limits
+LimitNOFILE=4096
+LimitNPROC=200
+MemoryMax=2G
+CPUQuota=200%
+TasksMax=250
+
+# Security settings
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/tinyllama-coder/data
+ReadWritePaths=/opt/tinyllama-coder/logs
+CapabilityBoundingSet=
+AmbientCapabilities=
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RemoveIPC=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tinyllama-coder
+
+[Install]
+WantedBy=multi-user.target
