@@ -1,0 +1,10 @@
+{
+  "enabled_plugins": [
+    "utilities"
+  ],
+  "plugin_settings": {},
+  "auto_load": true,
+  "plugin_paths": [
+    "./plugins"
+  ]
+}

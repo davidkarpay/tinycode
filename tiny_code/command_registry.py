@@ -93,6 +93,115 @@ class CommandRegistry:
             CommandInfo("rag_stats", CommandCategory.SAFE, DangerLevel.NONE,
                        "Show RAG system statistics",
                        allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            # Advanced file operations (safe, read-only)
+            CommandInfo("find", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Find files using glob patterns",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("grep", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Search for text patterns in files",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("tree", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show directory tree structure",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("compare", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Compare two files and show differences",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("dirstat", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Analyze directory structure and statistics",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            # Git operations (safe, read-only)
+            CommandInfo("git-status", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show git repository status",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("git-log", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show commit history",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("git-branches", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show all branches with tracking info",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("git-remotes", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show configured remote repositories",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("git-stashes", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show all stash entries",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("git-diff", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show file differences",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("git-info", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show comprehensive repository information",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            # System integration (safe, read-only)
+            CommandInfo("env", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show environment variables",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("processes", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show running processes",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("sysinfo", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show system information",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("netstat", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show network connections",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("deps", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Check dependencies availability",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("devenv", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show development environment information",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("resources", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show system resource usage",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            # CLI enhancement commands (safe, available in all modes)
+            CommandInfo("history", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Search command history",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("stats", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show command usage statistics",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("suggestions", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show intelligent command suggestions",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("export-history", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Export command history in various formats",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            # Error handling commands (safe, available in all modes)
+            CommandInfo("errors", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show recent errors and their status",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("error-stats", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show error statistics and recovery rates",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("recover", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Manually attempt error recovery",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
         ]
 
         # Planning commands (propose mode and above)
@@ -143,6 +252,56 @@ class CommandRegistry:
             CommandInfo("save", CommandCategory.MODIFICATION, DangerLevel.MEDIUM,
                        "Save generated content to files", requires_backup=True,
                        allowed_in_execute=True),
+
+            CommandInfo("replace", CommandCategory.MODIFICATION, DangerLevel.HIGH,
+                       "Replace text patterns in multiple files", requires_confirmation=True, requires_backup=True,
+                       allowed_in_execute=True),
+
+            # Git modification commands (execute mode only)
+            CommandInfo("git-add", CommandCategory.MODIFICATION, DangerLevel.LOW,
+                       "Stage files for commit",
+                       allowed_in_execute=True),
+
+            CommandInfo("git-commit", CommandCategory.MODIFICATION, DangerLevel.MEDIUM,
+                       "Create a commit", requires_backup=True,
+                       allowed_in_execute=True),
+
+            CommandInfo("git-push", CommandCategory.MODIFICATION, DangerLevel.HIGH,
+                       "Push changes to remote repository", requires_confirmation=True,
+                       allowed_in_execute=True),
+
+            CommandInfo("git-pull", CommandCategory.MODIFICATION, DangerLevel.MEDIUM,
+                       "Pull changes from remote repository",
+                       allowed_in_execute=True),
+
+            CommandInfo("git-branch", CommandCategory.MODIFICATION, DangerLevel.MEDIUM,
+                       "Create, delete, or switch branches",
+                       allowed_in_execute=True),
+
+            CommandInfo("git-checkout", CommandCategory.MODIFICATION, DangerLevel.MEDIUM,
+                       "Switch branches or restore files",
+                       allowed_in_execute=True),
+
+            CommandInfo("git-stash", CommandCategory.MODIFICATION, DangerLevel.LOW,
+                       "Stash or apply changes",
+                       allowed_in_execute=True),
+
+            # System modification commands (execute mode only)
+            CommandInfo("setenv", CommandCategory.MODIFICATION, DangerLevel.LOW,
+                       "Set environment variables",
+                       allowed_in_execute=True),
+
+            CommandInfo("kill", CommandCategory.MODIFICATION, DangerLevel.HIGH,
+                       "Kill processes by PID", requires_confirmation=True,
+                       allowed_in_execute=True),
+
+            CommandInfo("exec", CommandCategory.MODIFICATION, DangerLevel.MEDIUM,
+                       "Execute system commands",
+                       allowed_in_execute=True),
+
+            CommandInfo("monitor", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Monitor process performance",
+                       allowed_in_execute=True),
         ]
 
         # Execution commands (execute mode only)
@@ -184,8 +343,31 @@ class CommandRegistry:
                        allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
         ]
 
+        # Plugin management commands (available in all modes)
+        plugin_commands = [
+            CommandInfo("plugins", CommandCategory.SAFE, DangerLevel.NONE,
+                       "List all available plugins",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("plugin-enable", CommandCategory.SYSTEM, DangerLevel.LOW,
+                       "Enable a plugin",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("plugin-disable", CommandCategory.SYSTEM, DangerLevel.LOW,
+                       "Disable a plugin",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("plugin-reload", CommandCategory.SYSTEM, DangerLevel.LOW,
+                       "Reload a plugin",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("plugin-info", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show detailed information about a plugin",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+        ]
+
         # Register all commands
-        all_commands = safe_commands + planning_commands + modification_commands + execution_commands + system_commands
+        all_commands = safe_commands + planning_commands + modification_commands + execution_commands + system_commands + plugin_commands
 
         for cmd in all_commands:
             self.commands[cmd.name] = cmd

@@ -11,6 +11,7 @@ from rich.markdown import Markdown
 from .ollama_client import OllamaClient
 from .tools import CodeTools
 from .prompts import *
+from .self_awareness import SelfAwareness
 
 console = Console()
 
@@ -23,6 +24,7 @@ class TinyCodeAgent:
         self.conversation_context = None
         self.current_file = None
         self.workspace = Path.cwd()
+        self.self_awareness = SelfAwareness()
 
     def complete_code(self, code_context: str, requirements: str = "") -> str:
         """Complete code based on context"""
@@ -69,20 +71,51 @@ class TinyCodeAgent:
 
     def chat(self, message: str, stream: bool = False) -> str:
         """Interactive chat with the agent"""
+        # Enhance message with self-awareness if asking about capabilities
+        enhanced_message = message
+        if self._is_capability_question(message):
+            context = self._get_capability_context(message)
+            enhanced_message = f"{message}\n\nContext about my capabilities:\n{context}"
+
+        # Use enhanced system prompt with self-awareness
+        enhanced_system = SYSTEM_PROMPT + "\n\n" + self.self_awareness._generate_system_prompt()
+
         if stream:
             response_text = ""
             for chunk in self.client.stream_generate(
-                message,
-                system=SYSTEM_PROMPT
+                enhanced_message,
+                system=enhanced_system
             ):
                 response_text += chunk
                 console.print(chunk, end="")
             return response_text
         else:
             return self.client.generate(
-                message,
-                system=SYSTEM_PROMPT
+                enhanced_message,
+                system=enhanced_system
             )
+
+    def _is_capability_question(self, message: str) -> bool:
+        """Check if message is asking about capabilities"""
+        capability_keywords = [
+            'what can', 'can you', 'do you', 'capabilities',
+            'features', 'commands', 'modes', 'how do',
+            'what are your', 'list your', 'available', 'support'
+        ]
+        return any(kw in message.lower() for kw in capability_keywords)
+
+    def _get_capability_context(self, message: str) -> str:
+        """Get relevant capability context for message"""
+        msg_lower = message.lower()
+
+        if 'command' in msg_lower:
+            return self.self_awareness.get_commands_list()
+        elif 'mode' in msg_lower:
+            return self.self_awareness.get_modes_explanation()
+        elif any(word in msg_lower for word in ['capability', 'capabilities', 'feature', 'features']):
+            return self.self_awareness.get_capability_summary()
+        else:
+            return self.self_awareness._generate_system_prompt()
 
     def analyze_file(self, filepath: str) -> Dict[str, Any]:
         """Analyze a code file"""

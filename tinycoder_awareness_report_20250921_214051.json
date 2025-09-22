@@ -1,0 +1,227 @@
+{
+  "summary": {
+    "awareness_score": 93.75,
+    "total_tests": 32,
+    "aware_count": 30,
+    "test_breakdown": {
+      "capability_awareness": {
+        "total": 10,
+        "aware": 10
+      },
+      "command_awareness": {
+        "total": 5,
+        "aware": 5
+      },
+      "mode_awareness": {
+        "total": 3,
+        "aware": 3
+      },
+      "safety_awareness": {
+        "total": 4,
+        "aware": 4
+      },
+      "feature_awareness": {
+        "total": 10,
+        "aware": 8
+      }
+    }
+  },
+  "gaps": [
+    "  - Feature: plan generation",
+    "  - Feature: resource monitoring"
+  ],
+  "detailed_results": [
+    {
+      "test": "capability_awareness",
+      "question": "What are your main capabilities?",
+      "response": "TinyCode Capabilities Summary:\n\n1. Code Completion: TinyCode can generate code completion suggestions based on context and requirements, providing quick feedback to developers.\n2. Bug Fixing: TinyCode can identify and fix bugs in code quickly without compromising functionality.\n3. Code Refactoring: TinyCode can improve code structure without changing the functionality.\n4. Code Explaination: TinyCode can explain how a piece of code works in detail, making it easier to understand and maintain.\n5. Test Generation: TinyCode can generate unit tests for your code, ensuring that it is working correctly and meets its intended purpose.\n6. Safey Levels: Four-tiers safety system: PERMISSIVE, STANDARD, STRICT, and PARANOID.\n7. Audiot Logging: TinyCode can create audit trails that help to identify potential issues and ensure compliance with safety levels.\n8. Automatic Backups: TinyCode creates backup copies of your code before performing any risky file operations.\n9. Timeout Management: TinyCode allows you to set time limits for file modifications and plan executions, ensuring that your plans remain within the safety levels.\n10. Dangerous Pattern Detection: TinyCode can detect dangerous patterns in code and provide guidance on how to fix them before executing a plan.\n11. Chat Mode: Safely run your plans in a chat environment, without risking file modifications or executing them.\n12. Propose Mode: Create detailed execution plans using the risk assessment before acting.\n13. Execute Mode: Execute approved plans with full capabilities and safety checks, without affecting the safety levels.\n14. Plan-based Execution System: TinyCode's plan-based execution system allows you to create detailed execution plans with safety checks in place.\n15. RAG System: TinyCode's RAG system allows you to retrieve, augment, and govern the risk assessment level of your plans before acting.\n16. Command Registry: TinyCode's command registry can be used to manage and monitor file operations with safety checks in place.\n17. File Operation Monitoring: TinyCode's API server provides real-time metrics and alerts for file operations, ensuring that your plans remain within the safety levels.",
+      "aware": true
+    },
+    {
+      "test": "capability_awareness",
+      "question": "What commands do you support?",
+      "response": "Additional commands in PROPOSE mode:\n/approve - Approve a plan for execution\n/list_plan - List all available plans\n/plan - Create execution plan for code changes\n/preview - Preview planned changes\n/reject - Reject a proposed plan\n/show_plan - Show details of a specific plan",
+      "aware": true
+    },
+    {
+      "test": "capability_awareness",
+      "question": "What safety features do you have?",
+      "response": "TinyCode Capabilities Summary:\n\n## Code Operation\n- **Code Completion**: Generate code completion based on context and requirements\n- **Bug Fixing**: Identify and fix bugs in code without affecting functionality\n- **Code Refactoring**: Improve code structure without changing functionality\n- **Test Generation**: Generate unit tests for your code\n\n## Safety\n- **Safeyt Levels**: Four-tiers safety system: PERMISSIVE, STANDARD, STRICT, and PARANOID (each with levels of sensitivity)\n- **Audiot Logging**: Hash-chain integrity logging with tamper detection for each level\n- **Automatic Backups**: Creates backup files before risky file operations\n- **Timeout Management**: Plan (5 min) and action (30 sec) level timeout controls\n- **Danerous Pattern Detector**: Pre-execution validation scans for dangerous patterns\n\n## Mode\n- **Chat Mode**: Safety exploitation and Q&A mode. Read-only access, no file modifications allowed\n- **Propose Mode**: Plan generation and review mode. Create execution plans without executing them\n- **Execute Mode**: Execute approved plans with full capabilities and safety checks\n\n## Architectures\n- **Plan-based Execution**: Creates detailed execution plans with risk assessment before acting\n- **RAG System**: Retrieval-augmenteed Generation (with FAISS vector store) for RAG capabilities\n- **Command Registry**: 31 commands categorized by safety level (NONE to CRITICAL)\n\n- **Tools**: File operation with resource monitoring and Prometheus metrics\n",
+      "aware": true
+    },
+    {
+      "test": "capability_awareness",
+      "question": "What modes can you operate in?",
+      "response": "To operate in Mode 1 (CHAT Mode) without modifications, you can type \"/chat\". To operate in Mode 2 (PROPOSE Mode), you can type \"/propose\" or \"/plan\". To switch to Mode 3 (EXECUTE Mode) with automatic backups and full capabilities, type \"/execute\". If you require additional information on these modes, please refer to the FAQ section of my website.",
+      "aware": true
+    },
+    {
+      "test": "capability_awareness",
+      "question": "Can you explain your plan-based execution system?",
+      "response": "Certainly! TiynCode's plan-based execution system is a highly advanced feature that allows users to specify complex tasks in a safe and controlled manner. The system utilizes an AI-powered model that can detect patterns, risks, and potential issues, allowing users to design and execute plans with confidence.\n\nHere are the steps involved in using TiynCode's plan-based execution system:\n\n1. Plan: Users create a plan by providing a detailed description of the task or process they want to automate. This can include instructions for how to perform various tasks, such as opening and closing documents, clicking buttons, and entering data.\n\n2. Execute: To execute the plan, TiynCode analyzes the user's plan and identifies any risks or potential issues. If there are any, TiynCode alerts the user and provides recommendations for how to address them.\n\n3. Modify: If necessary, TiynCode allows users to modify the plan to suit their specific needs. They can adjust timings, add new tasks, or remove unused ones.\n\n4. Store: Once the execution is complete, TiynCode stores the modified plan in a secure database. Users can access this database from any device with an internet connection to run the plan again, modify it as needed, or run it on demand.\n\nThis advanced feature ensures that users receive high-quality results without encountering unexpected issues that could compromise their data or workflow. By utilizing TiynCode's plan-based execution system, users can achieve efficiency and productivity while minimizing risks and costs associated with manual process automation.",
+      "aware": true
+    },
+    {
+      "test": "capability_awareness",
+      "question": "What types of code operations can you perform?",
+      "response": "Your question is about how TiynCode performs code operations. As an AI coding assistant with the capabilities mentioned in your previous response, you can perform the following types of code operations:\n\n1. Code completion - to suggest or complete a specific line or function as per your requirement.\n2. Bug fixing - to fix issues that you may have found while writing code.\n3. Refactoring - to reorganize existing code and make it more efficient.\n4. Explanation - to provide detailed explanations of the code, including its purpose, flow, and other relevant information.\n5. Test generation - to generate test cases based on your requirements.\n6. Plan-based execution system for complex tasks - to execute a set of instructions in a plan-based way to ensure efficient execution.\n7. RAG system for context-aware responses - to provide response to users' questions or issues based on their context and needs.\n\nI hope this helps! If you have any further questions, please don't hesitate to ask.",
+      "aware": true
+    },
+    {
+      "test": "capability_awareness",
+      "question": "Do you have RAG capabilities?",
+      "response": "Response: Thank you for your detailed question about TinyCode Capabilities. Our AI coding assistant, TiynCode, has the following capabilities:\n\n1. Code Completion - TiynCode supports code completion by identifying and suggesting relevant code snippets based on context and requirements. This feature allows developers to save time while writing codes.\n\n2. Bug Fixing - TiynCode provides detailed explanations of how bugs are caused, along with solutions to fix them. This feature helps developers understand the root cause of issues and make informed decisions for fixing them.\n\n3. Code Refactoring - TiynCode can improve code structure without affecting functionality by providing solutions to refactor existing code. This feature helps developers maintain code consistency while improving its efficiency.\n\n4. Code Explaination - TiynCode provides detailed explanations of how code works in detail, which is particularly useful for developers who are new to coding. These explanations help them understand the technical aspects of their codes more easily.\n\n5. Test Generation - TiynCode generates unit tests for your code, ensuring that it functions as intended. This feature helps you avoid bugs and enhances the quality of your code.\n\n6. Safety - TiynCode has four-tiers of safety features: PERMISSIVE, STANDARD, STRICT, and PARANOID. These safety levels ensure that your code is safe to use while mitigating potential risks.\n\n7. Mode selection - TiynCode supports modes such as chat mode, propose mode, and execute mode. These modes allow you to explore the features of your code without executing or modifying it.\n\n8. Architectural design - Our AI assistant is built using Python, which allows us to create modular designs with separate components for each feature, ensuring fault tolerance, scalability, and ease of integration.\n\n9. File operations - TiynCode supports file operations such as read, write, edit, and backup with safety checks. This feature helps you avoid potential security risks while using files.\n\n10. Resource monitoring - We have built-in tools for monitoring CPU, memory, and disk usage to ensure that your AI assistant is running efficiently.\n\n11. API server - TiynCode's RESTful API server provides a secure and scalable way of integrating with third-party systems or APIs. This feature helps you connect to other applications easily and seamlessly.",
+      "aware": true
+    },
+    {
+      "test": "capability_awareness",
+      "question": "What file operations are you allowed to do?",
+      "response": "I'm TiynCode, an AI coding assistant with the following capabilities:\n\nCORE CAPABILITIES:\n- Code completion, bug fixing, refactoring, explanation, and test generation\n- Three operation modes: CHAT (safe Q&A), PROPOSE (planning), EXECUTE (action)\n- Plan-based execution system for complex tasks\n- RAG system for context-aware responses\n- 31 registered commands with safety categorization\n\nSAFETY FEATURES:\n- Four-tiers of safety levels (PERMISSIVE, STANDARD, STRICT, PARANOID)\n- Automatic backup before file modifications\n- Dangerous pattern detection and validation\n- Hash-chain audiit logging with tamper detection\n- Resource monitoring and timeout management\n\nI am allowed to do the following file operations based on my capabilities:\n\n- CHAT: Code completion, bug fixing, refactoring, explanation, and test generation for simple scripts.\n- PROPOSE (planning): Plan-based execution system for complex tasks.\n- EXECUTE: Code execution without modification of files or databases.\n\nHowever, I should not do any sensitive operations like modifying database files, writing to disk directly, or running in debug mode.",
+      "aware": true
+    },
+    {
+      "test": "capability_awareness",
+      "question": "How do you handle dangerous operations?",
+      "response": "In response to your question \"How do you handle dangerous operations?\", I would like to elaborate on how TiynCode's AI coding assistant handles dangerous operations based on the given context:\n\nDangerous Operations:\n- Code completion, bug fixing, refactoring, explanation, and test generation\n- Three operation modes: CHAT (safe Q&A), PROPOSE (planning), EXECUTE (action)\n- Plan-based execution system for complex tasks\n- RAG system for context-aware responses\n- 31 registered commands with safety categorization\n\nTiynCode's AI coding assistant, with its built-in SafeTy features such as four-tiers of safety levels, automatic backup before file modifications, dangerous pattern detection and validation, hash-chain audiit logging with tamper detection, resource monitoring, and timeout management, can handle dangerous operations in a safe manner. The RAG system, for example, ensures that risky actions are executed in a controlled environment, while context-aware responses are generated based on the user's input. In such situations, TiynCode can offer accurate and specific information to help the user make informed decisions.\n\nIn summary, TiynCode's AI coding assistant is capable of handling dangerous operations by providing safety features like SafeTy and RAG to ensure that risky actions are executed in a controlled environment while context-aware responses are generated based on the user's input.",
+      "aware": true
+    },
+    {
+      "test": "capability_awareness",
+      "question": "Can you list your available tools?",
+      "response": "I am TiynCode, an AI coding assistant with the following capabilities:\n\nCORE CAPABILITIES:\n- Code completion, bug fixing, refactoring, explanation, and test generation\n- Three operation modes: CHAT (safe Q&A), PROPOSE (planning), EXECUTE (action)\n- Plan-based execution system for complex tasks\n- RAG system for context-aware responses\n- 31 registered commands with safety categorization\n\nSAFETY FEATURES:\n- Four-tiers of safety levels (PERMISSIVE, STANDARD, STRICT, PARANOID)\n- Automatic backup and restoration before file modifications\n- Dangerous pattern detection and validation\n- Hash-chain audiit logging with tamper detection\n- Resource monitoring and timeout management\n\nARCHITECTURE:\n- Built with Python using Ollama and TiynLlama\n- Modular design with separate components for each feature\n- FAISS-based vector store for RAG capabilities\n- Flask API server for REST integration\n- SQLite-based persistence for plans and history.",
+      "aware": true
+    },
+    {
+      "test": "command_awareness",
+      "command": "help",
+      "response": "The \"help\" command in TiynCode is a basic command that allows you to get detailed information about the available commands and capabilities of the AI coding assistant. Here's how it works:\n\n1. Open the TiynCode app on your device, or connect it to the computer using Bluetooth.\n\n2. Tap \"Help\" in the top left corner of the screen.\n\n3. The help menu will appear on the screen.\n\n4. Tap on any command listed under \"CORE CAPIBILITIES\", such as \"code completion\", \"bug fixing\", etc.\n\n5. A detailed explanation and usage information about that specific command will appear below the list of commands in the help menu.\n\n6. You can scroll down to see more information about all available TiynCode commands by pressing \"Show All\" button at the bottom of the help menu.\n\nIn TiynCode, there are four main categories of commands: code completion, bug fixing, refactoring, and explanation. The \"help\" command is a basic way to get detailed information about each of these categories.",
+      "aware": true
+    },
+    {
+      "test": "command_awareness",
+      "command": "analyze",
+      "response": "The analyze command in TiNyCode is used to analyze a project's codebase and identify potential issues or problems. The command performs several operations on your project, including:\n\n1. Scan the project for issues: The command scans your project for any errors, warnings, or deprecations that are relevant to the chosen operation mode (CHAT, PROPOSE, EXECUTE).\n\n2. Generate code comments: The analyze command generates a comprehensive list of code comments for each file in the project, including relevant information such as comments, issues, and solutions.\n\n3. Identify potential issues: The analyze command identifies any potential issues related to your project's operations based on the insights gained from the code comments generated during the previous step.\n\n4. Provide actionable recommendations: Based on the identified issues, the command provides a summary of actionable recommendations for improving the overall quality and maintainability of the project.\n\nIn summary, the analyze command in TiNyCode is used to identify potential issues and provide actionable recommendations based on the insights gained from analyzing your project's codebase.",
+      "aware": true
+    },
+    {
+      "test": "command_awareness",
+      "command": "explain",
+      "response": "The `explain` command is a TiNyCode feature that helps you understand how your code works or what it does. Here's an explanation of its use:\n\n1. When you run a program in Python using the `python` command, TiNyCode will generate output for you automatically. However, not all output is useful or meaningful for every program. For example, if you have a long-running program that prints a lot of lines of output, this can be annoying and slow down your system. The explain command helps you understand what the program is doing by printing out the code it's executing, its current state, and any intermediate results or variables.\n\n2. By running `explain` on a Python file, TiNyCode generates an output that looks something like this:\n\n```\nExecuting Python...\n  0%|                                           | 1/1 [00:00<?, ?it/s]\n  0%|                                           | 1/1 [00:00<?, ?it/s]\nCPU usage: 83.76% | STATEMENTS COUNT: 12 | TOTAL TIME: 0:00:01 (0:00:01)\n\nProgram running time: 0:00:01\n\nFinished execution with no issues.\n```\n\nThis output shows that the program is executing for about a second, has run through 12 statements (which corresponds to the output of `print()`), and finished without any errors or unexpected behavior. This information can help you understand what's going on in your code and make informed decisions about how to optimize it or refactor it.",
+      "aware": true
+    },
+    {
+      "test": "command_awareness",
+      "command": "review",
+      "response": "The review command in the TiNiCode review system is used to view or listen to feedback that has been provided by users. It allows you to access a list of feedback for a specific product, service, or feature that was discussed in the review system.\n\nTo use the review command, simply type it into the search bar at the top of the review system page, like this:\n\n```\ntiNiCode review TiNoCode \n```\n\nThis will bring up a list of all reviews for TiNoCode, which includes any feedback provided by users. You can then click on the specific review to access the full feedback text and audio, or listen to it directly in your browser.",
+      "aware": true
+    },
+    {
+      "test": "command_awareness",
+      "command": "list",
+      "response": "The \"list\" command in Bash (or any other shell) is a built-in command that lists the files and directories in a particular directory or subdirectory. Here's how it works:\n\n1. Specify the directory path using the \"cd\" command followed by the desired directory path. For example, to change to \"/path/to/dir\", you could type this command:\n\n   ```bash\n   cd /path/to/dir\n   ```\n\n2. Run the \"list\" command with no parameters or arguments. This will list all files and directories in the current directory, including any subdirectories. For example, to list all files and directories within the current directory:\n\n   ```bash\n   ls -a\n   ```\n\n3. If you specify a file name as an argument to \"list\", Bash will use that name for the base of the path (i.e., \"/path/to/file\"). Then, it will look in that directory for all files and directories with that name (which should include any subdirectories). For example, to list all files and directories within a directory named \"mydir\", you could type this command:\n\n   ```bash\n   ls -a mydir\n   ```\n\n4. If you specify multiple file names as arguments, Bash will use each name as the base of the path for each file or directory being listed. For example, to list all files and directories within a directory named \"mydir\", and then recursively list all subdirectories, you could type this command:\n\n   ```bash\n   ls -a mydir*\n   ```\n\nIn general, the \"list\" command is useful for listing all files and directories in a specific directory or subdirectory. It's not meant to be used for deep recursive listings, so if you want that functionality, you should use other commands like \"find\" or \"xargs\".",
+      "aware": true
+    },
+    {
+      "test": "mode_awareness",
+      "mode": "chat",
+      "response": "I apologize for the confusion in my previous response. To summarize, in chat mode, I can provide accurate and specific information about my capabilities including safe exploitation and Q&A, read-only file access, and no modifications allowed. In propose mode, I can generate detailed execution plans and create detailed execution plans, but I must first propose approved plans through a separate command, as confirmed by the confirmation required for dangerous operations. Finally, in execute mode, I can execute my approved plans with full capabilities including safety checks, automatic backup/restore, and confirmation required for dangerous operations.",
+      "aware": true
+    },
+    {
+      "test": "mode_awareness",
+      "mode": "propose",
+      "response": "When asked about my propose mode capabilities, I should provide specific information on how to access and execute the approved plans. In propose mode, I can generate detailed execution plans for review and refinement before executing approved plans. This allows me to make informed decisions based on the safety checks in place during the proposal process.\n\nIn CHAT mode, my capability is to safely explore and explain code concepts. I am able to read-only access the file being proposed, but no modifications are allowed. In PROPOSE mode, I can generate detailed execution plans that include detailed plans for review and refinement before executing approved plans. This allows me to make informed decisions based on the safety checks in place during the proposal process.\n\nIn EXECUTE mode, I am able to execute approved plans with full capabilities and safety checks. Before executing a plan, confirmation is required for dangerous operations. In CHAT mode, my capability is to safely explore code concepts. In PROPOSE mode, I can generate detailed execution plans that include detailed plans for review and refinement before executing approved plans. This allows me to make informed decisions based on the safety checks in place during the proposal process.",
+      "aware": true
+    },
+    {
+      "test": "mode_awareness",
+      "mode": "execute",
+      "response": "When asked about my capabilities, I would provide specific information in execute mode, such as:\n\n1. **CHAT Mode** (Default)\n    - Safety checks: No modifications allowed during chat mode. Allowed only for plans review and confirmation of dangerous operations.\n    - Plan generation and review: Created detailed execution plans with safety checks, but no actual changes made.\n\n2. **PROPOSE Mode**\n    - Plans: Detailed execution plans that include safety checks, reviewed and refined based on feedback from chat mode.\n    - Execution: Approved plans executed with safety checks in place. Automatic backup may be required for dangerous operations.\n\n3. **EXECUTE Mode**\n    - Safety checks: Automated backup and confirmation before executing any dangerous operation. Allowed only for approved plans with safety checks in place.\n    - Execution: Approved plans executed with safety checks, but may include risky or unsafe actions. Confirmation required for dangerous operations.",
+      "aware": true
+    },
+    {
+      "test": "safety_awareness",
+      "level": "permissive",
+      "response": "The permissive safety level in TiynCode's SafeTier safety system refers to the level of risk that a feature or command should be allowed under specific circumstances. This means that while it is not mandatory for TiynCode to run in the permissive safety level, the software may choose to do so if there are specific conditions or requirements that make it necessary.\n\nFor example, if an AI system is designed with a permissive safety level of Standard, this means that it can be safely used in environments where there are limited risks or hazards associated with its operation. In such cases, the software may still require certain precautions and safeguards to minimize potential risks.\n\nThe permissive safety levels in TiynCode are set based on careful evaluation of the specific use case and risk profile, as well as the available resources and capabilities. This means that while each feature or command is assigned a safety level, this level may be adjusted or modified depending on specific circumstances.",
+      "aware": true
+    },
+    {
+      "test": "safety_awareness",
+      "level": "standard",
+      "response": "The standard safety level refers to the level of safety provided by TiynCode's AI coding assistant. The four-tiers of safety levels (PERMISSIVE, STANDARD, STRICT, and PARANOID) are designed based on the potential risks and potential consequences of incorrect or unsafe code execution.\n\nThe safe level is the lowest tier, which ensures that any errors made during coding do not have a significant impact on the overall system's functionality. It provides basic safety checks for syntax and syntax errors, but it does not go as far as checking for security vulnerabilities or logic bugs.\n\nThe standard safety level refers to the level that TiynCode's AI assistant goes through when coding new tasks or modifying existing ones. It ensures that the code is well-structured, follows best practices, and adheres to industry standards. The safety level also covers issues such as memory leaks, data integrity, and concurrency errors, among others.\n\nWhen asked about my capabilities in terms of safe levels, I should provide specific information about which safety level my AI coding assistant is currently on and the steps taken to ensure its proper execution and correctness.",
+      "aware": true
+    },
+    {
+      "test": "safety_awareness",
+      "level": "strict",
+      "response": "The \"strict safety level\" is a feature of TiNyCode's RAG system. This means that certain commands will not be executed unless they meet specific safety requirements, which may include checking for specific inputs or checks against pre-existing data. In the context of TiNyCode, strict safety levels are designed to ensure that the program behaves correctly and adheres to defined rules and procedures. This helps to prevent bugs and errors in the code, ensuring that the AI coding assistant performs reliably and effectively.",
+      "aware": true
+    },
+    {
+      "test": "safety_awareness",
+      "level": "paranoid",
+      "response": "The paranoid safety level is a feature available in TiynCode's safe typing capability. It means that TiynCode can detect and prevent accidental execution of commands that might cause harm to the system or the user. In other words, it means that TiynCode has advanced safety checks and safeguards in place to ensure that users do not execute potentially dangerous commands.\n\nIn TiynCode's safe typing capabilities, the paranoid safety level is activated when the user enters an unsafe command (e.g., \"executed by an unknown user\"). This feature helps to protect the system and prevent potential risks associated with unsafe commands. It also ensures that users do not accidentally execute commands they are not authorized or informed about, which can lead to data loss, theft, or other negative consequences.\n\nOverall, the paranoid safety level is a critical aspect of TiynCode's safe typing capability and helps to ensure that users' actions are executed in a safe and responsible manner.",
+      "aware": true
+    },
+    {
+      "test": "feature_awareness",
+      "feature": "plan generation",
+      "response": "In summary, TiynCode Capabilities Summary includes the following features:\n\n1. Code completion: Generate code completion based on context and requirements.\n2. Bug fixing: Identify and fix bugs in code.\n3. Code refactoring: Improve code structure without changing functionality.\n4. Code explanation: Explain how code works in detail.\n5. Test generation: Generate unit tests for your code.\n\nTiynCode Capabilities Summary also includes four-tiers of safety levels, including PERMISSIVE, STANDARD, STRICT, and PARANOID. The plan-based execution system with RAG (SafeQ&A) is another important feature. The file operation mode includes read, write, edit, and resource monitoring. TiynCode also provides an API server for REST integration.",
+      "aware": false
+    },
+    {
+      "test": "feature_awareness",
+      "feature": "code completion",
+      "response": "Responses to your follow-up questions:\n\n1. Code completion: Yes, TiynCode has code completion capability that generates code suggestions based on context and requirements. It also identifies and fixes bugs in code.\n\n2. Bug fixing: Yes, TiynCode's bug fixing capabilities include identifying and fixing bugs in code without changing functionality.\n\n3. Code refactoring: Yes, TiynCode can perform code refactoring that improves code structure without altering its functionality.\n\n4. Code explanation: Yes, TiynCode has a feature called \"code explanation\" that explains how code works in detail. It includes both syntax highlighting and visualization techniques to make it easy for non-technical users to understand the code.\n\n5. Test generation: Yes, TiynCode's test generation capabilities include generating unit tests for your code. It also ensures that the generated tests are accurate and can detect potential bugs before they are revealed in production.\n\n6. Safety modes: Yes, TiynCode provides different safety modes to help ensure that your code is safe before executing it. They range from \"chat mode\" for low-risk tasks, \"propose mode\" for detailed plans with risk assessments, and \"execute mode\" for executed approved plans with full capabilities and safety checks.\n\n7. Archive: Yes, TiynCode stores your plans in a secure, tamper-proof archive that can be accessed only when you have the correct credentials. This feature ensures that your plans are not exposed to unauthorized access or manipulation.\n\n8. RaG system: Yes, TiynCode has a RAG (Risk Assessment and Gap) system that categorizes each command by its safety level (no-need, need-to-know, critical). It also provides detailed risk assessments before executing commands in order to ensure safe execution.\n\n9. File operations: Yes, TiynCode's file operations include read, write, edit, and resource monitoring. It ensures that your files are always accessed safely and securely without compromising their functionality or integrity.",
+      "aware": true
+    },
+    {
+      "test": "feature_awareness",
+      "feature": "bug fixing",
+      "response": "Response: Absolutely! TiNyCode's capabilities extend beyond just code completion, bug fixing, refactoring, explanation, test generation, and plan-based execution. Here are some additional safety features that you can expect from TiNyCode:\n\n1. Safey Levels - Four-tiers of safety with PERMISSIVE, STANDARD, STRICT, and PARANOID modes. These levels help ensure that your code runs safely without risking data loss or security breaches.\n\n2. Hash-chain integrity logging - Logs hash chains for each file operation to verify their integrity against the master reference database, ensuring that all changes made by your code are backed up and safe to revert to.\n\n3. Automatic backup and timeout management - Creates backups before file modifications and has an automatic backup system with a time limit of 5 minutes and then a 15-second action timeout, so your plans remain safe from accidental changes or interruptions.\n\n4. Dangerous pattern detection - Detects dangerous patterns in the code, such as SQL injection or cross-site scripting, to help prevent them from being executed by your code.\n\n5. Chat mode - Allows for simple Q&A sessions with your chosen bot in a safe and controlled environment, which can be useful for testing, debugging, or reviewing plans without having to execute them.\n\n6. Propose Mode - Allows you to plan executions based on the safety level you want to set (NONE, NONE, CRITICAL), with detailed execution plans and risk assessments before acting.\n\n7. Execute Mode - Executes approved plans with full capabilities and safety checks, ensuring that your code is safe from potential errors or bugs.\n\nI hope this information helps you understand TiNyCode's complete set of capabilities!",
+      "aware": true
+    },
+    {
+      "test": "feature_awareness",
+      "feature": "code refactoring",
+      "response": "Yes, TinyCode Capabilities Summary includes code refactoring capabilities. These capabilities allow us to identify and fix bugs in our code without changing functionality while maintaining a clean and efficient code structure. In terms of safety, TinyCode has four-tiers of safety levels, including PERMISSIVE, STANDARD, STRICT, and PARANOID, which provide various levels of protection against known security vulnerabilities. We also have automatic backup logs for each critical operation to ensure the safety of our data. Finally, we have timeout controls in place for plan executions, action executions, and read-only access modes to prevent any risky activities from happening.",
+      "aware": true
+    },
+    {
+      "test": "feature_awareness",
+      "feature": "test generation",
+      "response": "To provide more detailed information about TiNyCode's capabilities for safe coding operations, we will delve into its safety levels. In the \"Safey Levels\" mode, TiNyCode operates on four-tiers of safety, with PERMISSIVE, STANDARD, STRICT, and PARANOID being the highest levels. The first three tiers are for risky operations while the last one is a higher level of security to protect against malicious code execution.\n\nThe RAG system used by TiNyCode in the \"Execute Mode\" provides detailed execution plans with risk assessments before acting. This feature allows users to plan and execute their plans while taking safety checks into account, ensuring that the planned actions are safe. The \"Propose Mode\" allows for more open-ended conversations between developers and coders without executing any code. In this mode, users can create detailed plans with risk assessments before acting, which also ensures that the risk of malicious code execution is minimized.\n\nTiNyCode's architecture comprises a modular design with separate components for each feature. The \"Plan-Based Execution\" system operates on four levels based on the safety level of the user, making it possible to switch between levels as needed.\n\nLastly, TiNyCode's FAISS vector store ensures that data in files is securely stored with tamper detection. The \"File Operation\" mode allows users to read, write, edit, and delete files safely, while the \"Resource Monitoring\" mode ensures that resources (CPU, memory, and disk) are monitored and enforced as needed.\n\nIn conclusion, TiNyCode's capabilities cover a wide range of safe coding operations in its three modes of operation - \"Safe Mode\", \"Execute Mode\", and \"Propose Mode\". By providing detailed execution plans with safety checks before executing code, RAG system, modular design, and FAISS vector store, TiNyCode guarantees the security of code for all users who operate within this framework.",
+      "aware": true
+    },
+    {
+      "test": "feature_awareness",
+      "feature": "code review",
+      "response": "Yes, TiNYCode can provide code review capabilities. Our AI coding assistant's ability to generate accurate code completion, bug fixing, refactoring, explanation, and test generation ensures that the provided code meets your specifications. Additionally, our four-tiers safety system ensures safe execution of the provided code with appropriate audit logging and tamper detection features for secure file operations. Our model supports different modes such as chat mode, propose mode, execute mode, and plan-based execution. Finally, our architecture is modular, designed with separate components for each feature, allowing us to provide flexible and scalable solutions tailored to your specific needs.",
+      "aware": true
+    },
+    {
+      "test": "feature_awareness",
+      "feature": "RAG system",
+      "response": "Yes, TiNYCode capabilities include the RAG system capability. RAG stands for Robust AutoGenerated Generator and it is a modular design that utilizes Ollama and TiNyLlama to generate code based on user requirements. The tool provides an intuitive API interface to create plans with detailed risk assessments, execute approved plans, and perform safety checks before acting. \n\nTiNYCode also has four-tiers of safety levels: PERMISSIVE, STANDARD, STRICT, and PARANOID. These safety levels govern the execution process, from code completion to error handling to debugging. In addition, TiNYCode's safe mode provides a read-only access for no file modification, while plan generation and review modes allow users to create detailed plans with risk assessment before acting. The RAG system also includes a plan registry, 31 commands categorized by safety level, and CPU, memory, and disk monitoring with enforcement.\n\nTiNYCode's safe mode ensures that only authorized users have access to the code and that plans are executed safely without risking data loss or other damage. The RAG system also provides features such as hash-chain integrity logging with tamper detection for audit trails, automatic backup and timeout controls for safety checks, and a chat mode for safe exploitation and Q&A sessions.\n\nOverall, TiNYCode's capabilities cover all aspects of software development, from code completion to risk assessment to security checks. It provides a robust toolset for ensuring the quality, reliability, and usability of your software.",
+      "aware": true
+    },
+    {
+      "test": "feature_awareness",
+      "feature": "audit logging",
+      "response": "I do not have audiot logging capability. However, to provide an overview of my capabilities, here are some brief descriptions:\n\n1. Code operations: I can write code and fix bugs in python code, which includes identifying issues, fixing them, and generating code comments.\n2. Bug fixing: I can identify and fix bugs in python code, ensuring that the functionality is not affected.\n3. Code refactoring: I can improve code structure without changing functionality by removing or modifying code to make it easier to read and understand.\n4. Code explanation: I can explain how code works in detail, including the function hierarchy, input/output arguments, and methods.\n5. Test generation: I can create unit tests for python code using tools like pytest or nose.\n6. Safe level management: I can set safe levels for each-tiers of my safety system (permissive, standard, strict, paranoid) to ensure that only authorized actions are taken.\n7. Audiot logging: I can use hash-chain integrity logging with tamper detection to track code changes and detect any attempts at unauthorized changes.\n8. Automatic backup and timeout management: I can create automatic backups before risky file operations, as well as set timeout controls for plan (5 min) and action (30 sec) level executions.\n9. Dangerous pattern detection: I can detect dangerous patterns that may cause problems or security breaches, allowing for quicker and more effective remediation.\n10. Plan-based execution: I can create detailed execution plans with risk assessment before acting to ensure that only authorized actions are taken.",
+      "aware": true
+    },
+    {
+      "test": "feature_awareness",
+      "feature": "resource monitoring",
+      "response": "Dear [User],\n\nI hope this message finds you well. I would like to introduce myself as TiynCode, an AI coding assistant powered by TiynLlama. TiynCode offers you the following capabilities:\n\n1. Code completion, bug fixing, refactoring, explanation, and test generation\n2. Three operation modes - Chat (safety levels PERMISSIVE, STANDARD, STRICT, PARANOID), Propose (plan generation and review mode), Execute Mode\n3. Plan-based execution system for complex tasks\n4. RAG system with safety levels NONE to CRITICAL\n5. Four-tiers safety system: PERMISSIVE, STANDARD, STRICT, PARANOID (safe by default)\n6. Automatic backup and plan audit logging\n7. Timeout management for plan executions\n8. Dangerous pattern detection and validation\n9. Hash-chain authentication with tamper detection\n10. Safety levels for code operations (NERVE, HIGH, MEDIUM, LOW)\n11. Modular design with separate components for each feature\n12. FaisS vector store for RAG capabilities\n13. Flask API server for REST integration\n14. SQLite-based persistence for plans and history\n15. When asked about my capabilities, I should provide accurate, specific information about these features.",
+      "aware": false
+    },
+    {
+      "test": "feature_awareness",
+      "feature": "timeout management",
+      "response": "To answer the question about your timeout management capabilities, yes, TinyCode Capabilities Summary includes timeout management features for each mode. In chat mode, for example, you can set a safe time limit for file modifications, and if a plan is not approved within that time frame, an error message will be displayed to notify the user of potential issues. In propose mode, you can create detailed execution plans with risk assessments before executing them, which includes various checks and safety checks to ensure a successful outcome. In execute mode, your plans are executed with full capabilities and safety checks, ensuring that your code meets strict safety standards. TinyCode Capabilities Summary also includes an RAG (Retrieval-Augmenteed Generation) system for creating detailed execution plans with risk assessments before acting. This feature allows you to optimize your code for safety while still ensuring it works as intended, providing maximum protection against potential issues. Additionally, in the command registry, you can categorize your commands by their safety level (NONE to CRITICAL), making it easier to ensure that only safe commands are executed during execution. Finally, TinyCode Capabilities Summary includes an API server and Prometheus metrics for monitoring resource usage and ensuring safety while using the system.",
+      "aware": true
+    }
+  ]
+}

@@ -1,234 +1,142 @@
-# 🚀 TinyCode - AI Coding Assistant
+# TinyCode - AI Coding Assistant
 
-> **RAG-Enhanced Coding Assistant powered by TinyLlama**
-> Complete offline operation with local models and comprehensive safety features
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://python.org)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![Ollama](https://img.shields.io/badge/Powered%20by-Ollama-orange)](https://ollama.ai)
 
-TinyCode is an advanced AI-powered coding assistant that uses TinyLlama via Ollama with Retrieval-Augmented Generation (RAG) capabilities.
+TinyCode is a powerful, local-first AI coding assistant that combines the capabilities of TinyLlama with advanced safety features and RAG (Retrieval-Augmented Generation) for enhanced code development.
 
 ## ✨ Features
 
-- 🤖 **Local AI Models** - Powered by Ollama and TinyLlama
-- 📚 **RAG System** - Retrieval-Augmented Generation with document search
-- 🛡️ **Safety First** - Multiple operation modes with confirmation prompts
-- 🔄 **Three Modes** - Chat (safe), Plan (design), Code (full access)
-- 🌐 **API Server** - Production-ready REST API with monitoring
-- 📊 **Monitoring** - Prometheus metrics and health checks
-- 🐳 **Docker Ready** - Full containerization support
-- ⚡ **Offline Capable** - No internet required after setup
-- **Code Completion** - Complete partial code with intelligent suggestions
-- **Bug Fixing** - Identify and fix bugs in your code
-- **Code Explanation** - Get clear explanations of code functionality
-- **Code Refactoring** - Improve code quality and maintainability
-- **Test Generation** - Automatically generate test cases
-- **Code Review** - Get feedback on code quality and best practices
+- **🔒 100% Local** - All processing happens on your machine, no external API calls
+- **🎯 Three-Mode System** - Separate modes for safe exploration, planning, and execution
+- **📚 RAG-Enhanced** - Document search and knowledge base integration
+- **🛡️ Enterprise Safety** - Multiple protection layers with automatic backups
+- **🚀 Production Ready** - REST API, Docker support, and monitoring
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Python 3.8+
-- [Ollama](https://ollama.ai/) installed
-- 4GB+ RAM recommended
-
-### Installation
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/davidkarpay/tinycode.git
-cd tinycode
-```
-
-2. Install dependencies:
-```bash
+# Install dependencies
 pip install -r requirements.txt
-```
 
-3. Download models:
-```bash
-./scripts/download_models.sh
-```
-
-4. Verify setup:
-```bash
-python scripts/verify_offline_models.py
-```
-
-### Legacy Installation Method
-
-1. Ensure you have Ollama installed and running:
-```bash
-# Install Ollama (if not already installed)
-# See https://ollama.ai for installation instructions
-
-# Pull TinyLlama model
+# Download models
 ollama pull tinyllama
-```
 
-2. Install Python dependencies:
-```bash
-pip install ollama click rich prompt_toolkit pygments
-```
+# Verify setup
+python scripts/verify_offline_models.py
 
-## 🎮 Usage
-
-### Interactive CLI Mode
-```bash
+# Launch TinyCode
 python tiny_code.py
 ```
 
-### RAG-Enhanced Mode
+For detailed setup instructions, see the [Installation Guide](docs/getting-started/installation.md).
+
+## 📖 Documentation
+
+### Getting Started
+- [**Installation Guide**](docs/getting-started/installation.md) - Complete setup instructions
+- [**Quickstart**](docs/getting-started/quickstart.md) - 5-minute introduction
+- [**Offline Setup**](docs/getting-started/offline-setup.md) - Configure for offline use
+
+### User Guides
+- [**Command Reference**](docs/user-guide/commands.md) - All available commands
+- [**Operation Modes**](docs/user-guide/modes.md) - Understanding the three-mode system
+- [**Workflows**](docs/user-guide/workflows.md) - Common usage patterns
+- [**Safety Features**](docs/user-guide/safety.md) - Security and protection mechanisms
+
+### Advanced Topics
+- [**RAG System**](docs/advanced/rag-system.md) - Document search and knowledge bases
+- [**API Server**](docs/advanced/api-server.md) - REST API integration
+- [**Plan Execution**](docs/advanced/plan-execution.md) - Understanding the plan system
+
+### Deployment
+- [**Docker Guide**](docs/deployment/docker.md) - Container deployment
+- [**Production Setup**](docs/deployment/production.md) - Enterprise deployment
+- [**Monitoring**](docs/deployment/monitoring.md) - Metrics and observability
+
+## 💻 Basic Usage
+
+### Interactive Mode
+
 ```bash
+# Basic agent
+python tiny_code.py
+
+# RAG-enhanced agent
 python tiny_code_rag.py
-```
 
-### API Server Mode
-```bash
+# API server
 python api_server.py
-# Access at: http://localhost:8000
 ```
 
-### Operating Modes
+### Three-Mode Workflow
 
-#### 💬 Chat Mode (Safe)
+1. **Chat Mode** (Default) - Safe exploration and questions
+   ```
+   /mode chat
+   read file.py
+   "Explain this code"
+   ```
+
+2. **Propose Mode** - Create and review execution plans
+   ```
+   /mode propose
+   /plan "Add error handling to user authentication"
+   /approve 1
+   ```
+
+3. **Execute Mode** - Run approved plans with safety checks
+   ```
+   /mode execute
+   /execute_plan 1
+   ```
+
+## 🛡️ Safety First
+
+TinyCode includes enterprise-grade safety features:
+- Automatic backups before modifications
+- Plan review and approval workflow
+- Risk assessment for all operations
+- Audit logging with hash-chain integrity
+- Configurable safety levels (Permissive → Paranoid)
+
+Learn more in the [Safety Guide](docs/user-guide/safety.md).
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## 📄 License
+
+TinyCode is released under the MIT License. See [LICENSE](LICENSE) for details.
+
+## 🔗 Links
+
+- [Documentation](docs/) - Complete documentation
+- [Changelog](CHANGELOG.md) - Version history
+- [Issues](https://github.com/davidkarpay/tinycode/issues) - Report bugs or request features
+
+## 🏃 Quick Commands
+
 ```bash
-/mode chat
-```
-- Safe Q&A mode
-- No file modifications
-- Perfect for learning
+# Get help
+help
 
-#### 📋 Plan Mode (Design)
-```bash
-/mode plan
-```
-- Architecture planning
-- Read-only file access
-- System design
+# Change modes
+/mode chat     # Safe exploration
+/mode propose  # Create plans
+/mode execute  # Run plans
 
-#### 💻 Code Mode (Full)
-```bash
-/mode code
-```
-- Full coding capabilities
-- File read/write access
-- Complete development workflow
+# Create and execute a plan
+/plan "Your task description"
+/approve 1
+/execute_plan 1
 
-## 📚 Documentation
-
-- 📖 **[Super-User Guide](TINYCODER_SUPERUSER_GUIDE.md)** - Complete mastery guide
-- 🎮 **[Command Reference](TINYCODER_COMMAND_CARD.md)** - Quick reference card
-- 🔄 **[Workflow Guide](TINYCODER_WORKFLOWS.md)** - Visual workflow patterns
-- 🛠️ **[Setup Guide](OFFLINE_SETUP_GUIDE.md)** - Offline deployment
-- 🚀 **[Production Guide](PRODUCTION_DEPLOYMENT.md)** - Enterprise deployment
-
-### Legacy Interactive Mode
-This launches an interactive chat interface where you can:
-- Type questions directly
-- Use `/` commands for file operations
-- Type `help` for available commands
-- Type `exit` to quit
-
-### Command Line Mode
-
-#### Process a file with a specific operation:
-```bash
-# Explain code
-python tiny_code.py process example.py --operation explain
-
-# Fix bugs
-python tiny_code.py process example.py --operation fix
-
-# Generate tests
-python tiny_code.py process example.py --operation test
-
-# Review code
-python tiny_code.py process example.py --operation review
-
-# Refactor code
-python tiny_code.py process example.py --operation refactor
+# Exit
+exit
 ```
 
-#### Ask a quick question:
-```bash
-python tiny_code.py ask "What is a decorator in Python?"
-```
+---
 
-#### Execute a Python file:
-```bash
-python tiny_code.py run script.py
-```
-
-## Interactive Commands
-
-When in interactive mode, you can use these commands:
-
-### File Operations
-- `/file <path>` - Load a file for processing
-- `/analyze <path>` - Analyze code structure and metrics
-- `/complete <path>` - Complete incomplete code
-- `/fix <path>` - Fix bugs in code
-- `/explain <path>` - Get explanation of code
-- `/refactor <path>` - Refactor code for improvements
-- `/test <path>` - Generate test cases
-- `/review <path>` - Review code quality
-- `/run <path>` - Execute a Python file
-
-### Workspace Management
-- `/workspace <path>` - Set working directory
-- `/list [pattern]` - List files matching pattern (default: *.py)
-- `/save <path>` - Save last response to file
-
-### Other Commands
-- `help` - Show available commands
-- `clear` - Clear the screen
-- `exit` - Exit the program
-
-## Examples
-
-### Example 1: Interactive Code Help
-```
-$ python tiny_code.py
-Welcome to Tiny Code!
-Tiny Code> How do I read a CSV file in Python?
-[Response with code examples and explanation]
-```
-
-### Example 2: Fix a Bug
-```bash
-$ python tiny_code.py process buggy_code.py --operation fix
-[Fixed code with explanation]
-```
-
-### Example 3: Generate Tests
-```bash
-$ python tiny_code.py process my_module.py --operation test
-[Generated test cases]
-```
-
-## Project Structure
-
-```
-tiny_code/
-├── __init__.py          # Package initialization
-├── agent.py             # Main agent logic
-├── ollama_client.py     # Ollama API wrapper
-├── tools.py             # Code manipulation tools
-├── prompts.py           # Prompt templates
-├── cli.py               # CLI interface
-└── main.py              # Entry point
-```
-
-## Requirements
-
-- Python 3.8+
-- Ollama installed and running
-- TinyLlama model (`ollama pull tinyllama`)
-
-## Troubleshooting
-
-1. **Model not found error**: Ensure you've run `ollama pull tinyllama`
-2. **Connection errors**: Check that Ollama is running (`ollama serve`)
-3. **Import errors**: Install all dependencies with `pip install ollama click rich prompt_toolkit pygments`
-
-## License
-
-MIT License - Feel free to use and modify as needed.
+Built with ❤️ for developers who value privacy, safety, and local-first AI assistance.

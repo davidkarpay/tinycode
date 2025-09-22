@@ -2,79 +2,73 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Quick Reference
-
-### 🚀 Essential Commands for New Claude Instances
-```bash
-# 1. Check system status first
-ollama list                          # Verify TinyLlama is available
-python tiny_code_rag.py search "test" --kb code  # Test RAG system
-
-# 2. Start interactive mode (default: Chat mode - safe exploration)
-python tiny_code_rag.py
-
-# 3. Essential interactive commands
-/mode status                         # Check current mode and permissions
-/mode propose                        # Switch to plan generation mode
-/plan "your development request"     # Generate execution plan
-/approve <plan_id>                   # Approve plan for execution
-/mode execute                        # Switch to execution mode
-/execute_plan <plan_id>              # Execute approved plan
-```
-
-### 🔄 Three-Mode Workflow (CRITICAL for Claude instances)
-```
-┌─────────────┐    /mode propose    ┌─────────────┐    /approve     ┌─────────────┐
-│ CHAT MODE   │ ──────────────────> │ PROPOSE     │ ─────────────> │ EXECUTE     │
-│ (Read-only) │                     │ (Planning)  │                │ (Changes)   │
-│ - Safe Q&A  │ <────────────────── │ - Generate  │ <───────────── │ - Run plans │
-│ - Analysis  │    /mode chat       │   plans     │   /mode chat   │ - Backups   │
-└─────────────┘                     │ - Review    │                │ - Auditing  │
-                                     └─────────────┘                └─────────────┘
-```
-
-### ⚠️ Critical Safety Rules for Claude
-1. **NEVER** make file changes in Chat mode
-2. **ALWAYS** generate plans in Propose mode before executing
-3. **VERIFY** safety level before approving high-risk plans
-4. **CHECK** backup creation before destructive operations
-
 ## Commands
 
-### Development
+### Setup & Prerequisites
 ```bash
-# Install dependencies
+# Quick setup with Makefile
+make quick-start   # Complete setup for new developers
+make bootstrap     # Install dependencies and download models
+
+# Manual setup
 pip install -r requirements.txt
+./scripts/download_models.sh
+python scripts/verify_offline_models.py
 
-# Launch RAG-enhanced agent (interactive mode with three operation modes)
-python tiny_code_rag.py
-
-# Launch basic agent (interactive mode)
-python tiny_code.py
+# Ensure Ollama is running with TinyLlama
+ollama pull tinyllama
+ollama list  # Verify tinyllama:latest is available
 ```
 
-### Three-Mode Operation System
+### Development & Launch Modes
 ```bash
-# Start in Chat mode (default) - safe exploration and Q&A only
-python tiny_code_rag.py
-# In interactive mode:
-/mode chat      # Switch to Chat mode (read-only)
-/mode propose   # Switch to Propose mode (plan generation and review)
-/mode execute   # Switch to Execute mode (execute approved plans)
-/mode status    # Show current mode and available commands
+# Using Makefile commands
+make dev           # Launch API server mode
+make cli           # Launch interactive CLI mode
+make rag           # Launch RAG-enhanced agent
+
+# Direct Python commands
+python tiny_code.py         # Interactive CLI mode
+python tiny_code_rag.py     # RAG-enhanced agent
+python api_server.py        # API server (http://localhost:8000)
 ```
 
-### Plan-Based Execution (Propose → Execute Workflow)
+### Testing
 ```bash
-# In Propose mode - generate execution plans
-/plan "Create a Python script to calculate fibonacci numbers"
-/list_plans              # List all plans
-/show_plan <plan_id>     # Show plan details
-/approve <plan_id>       # Approve plan for execution
-/reject <plan_id>        # Reject plan
+# Using Makefile commands
+make test          # Run all basic tests
+make test-coverage # Run tests with coverage
+make e2e           # Run end-to-end tests
+make stress        # Run stress tests
 
-# In Execute mode - run approved plans
-/execute_plan <plan_id>  # Execute an approved plan with safety checks
+# Direct Python commands
+python example_test.py
+python test_plan_execution.py
+python demo_safety_systems.py
+python test_plugin_system.py  # Test plugin architecture
+
+# Stress tests for security and resource limits
+python run_stress_tests.py
+python stress_test_security.py
+python stress_test_resource_limits.py
+python stress_test_edge_cases.py
+
+# Run pytest tests
+pytest
+```
+
+### Docker Deployment
+```bash
+# Using Makefile commands
+make docker-up           # Start all Docker services
+make docker-down         # Stop Docker services
+make docker-logs         # View Docker logs
+make docker-offline-up   # Start offline deployment
+
+# Direct Docker commands
+docker-compose -f docker/docker-compose.yml up -d
+docker-compose -f docker/docker-compose.yml --profile offline up -d
+docker-compose -f docker/docker-compose.yml logs -f tinyllama
 ```
 
 ### RAG System Operations
@@ -85,346 +79,279 @@ python tiny_code_rag.py ingest <path> --kb general|genetics|code
 # Search knowledge base
 python tiny_code_rag.py search "query" --kb general|genetics|code
 
-# Summarize documents
-python tiny_code_rag.py summarize <file> --type extractive --length 300
-
-# Ask questions using RAG
-python tiny_code_rag.py ask "question" --kb general|genetics|code
-
-# Set up genetics knowledge base (one-time setup)
-python tiny_code_rag.py setup-genetics --max-pages 50
-```
-
-### Testing and Demonstration
-```bash
-# Test basic agent functionality
-python example_test.py
-
-# Test complete plan execution workflow
-python test_plan_execution.py
-
-# Demonstrate enhanced safety systems
-python demo_safety_systems.py
-
-# Test RAG system components individually
-python -c "from tiny_code.rag_enhanced_agent import RAGEnhancedTinyCodeAgent; agent = RAGEnhancedTinyCodeAgent(); print('RAG system initialized')"
-```
-
-### Prerequisites
-```bash
-# Ensure Ollama is running with TinyLlama
-ollama pull tinyllama
-ollama list  # Verify tinyllama:latest is available
+# Interactive mode with RAG
+python tiny_code_rag.py
+# Then use: /rag "your question"
 ```
 
 ## Architecture
 
-This is a local-first AI coding assistant system built around TinyLlama with optional RAG (Retrieval-Augmented Generation) capabilities and a sophisticated three-mode operation system with enterprise-grade safety features.
+TinyCode is a Python-based AI coding assistant system with sophisticated safety features and multiple operation modes. It's designed for 100% local operation using Ollama and TinyLlama.
 
 ### Core Components
 
-**TinyCode Agent** (`tiny_code/agent.py`)
-- Main AI coding assistant powered by TinyLlama via Ollama
-- Provides code completion, explanation, bug fixing, refactoring, test generation
-- Uses structured prompts for consistent responses
-- Maintains conversation context and workspace awareness
-
-**RAG-Enhanced Agent** (`tiny_code/rag_enhanced_agent.py`)
-- Extends TinyCode Agent with RAG capabilities
-- Integrates document search, summarization, and context-aware responses
-- Provides genetics-specific coding assistance
+**Main Agent System** (`tiny_code/`)
+- `agent.py` - Base TinyCode agent with code operations (completion, explanation, bug fixing, refactoring)
+- `rag_enhanced_agent.py` - Extended agent with RAG capabilities for context-aware responses
+- `ollama_client.py` - Wrapper for Ollama API communication
+- `cli.py` - Enhanced CLI with mode awareness, Rich formatting, command history, and autocompletion
+- `tools.py` - Advanced file system operations including glob pattern matching, grep functionality, and multi-file editing
 
 **Three-Mode Operation System**
-- **Mode Manager** (`tiny_code/mode_manager.py`) - Controls operation modes (CHAT/PROPOSE/EXECUTE)
-- **Command Registry** (`tiny_code/command_registry.py`) - Categorizes 31 commands by safety level and mode permissions
-- Mode-aware CLI with command filtering and Rich-formatted interfaces
+- `mode_manager.py` - Controls CHAT/PROPOSE/EXECUTE modes with safety boundaries
+- `command_registry.py` - 40+ commands categorized by safety level and mode restrictions
+- `cli_enhancements.py` - Advanced CLI features with command history, autocompletion, and usage analytics
+- Mode transitions require explicit commands, preventing accidental dangerous operations
 
-**Plan-Based Execution System**
-- **Plan Generator** (`tiny_code/plan_generator.py`) - Creates detailed execution plans with risk assessment
-- **Plan Executor** (`tiny_code/plan_executor.py`) - Executes approved plans with comprehensive safety features
-- **Plan Validator** (`tiny_code/plan_validator.py`) - Pre-execution validation and security scanning
-- Persistent plan storage with JSON serialization and status tracking
+**Enhanced Capabilities Framework**
+- `git_operations.py` - Comprehensive git integration with workflow automation and repository analysis
+- `system_integration.py` - System monitoring, environment management, and process control
+- `error_handling.py` - Robust error recovery system with automatic categorization and recovery strategies
+- `self_awareness.py` - Dynamic capability discovery and introspection system
+- `plugin_system.py` - Modular plugin architecture for extensibility
 
-**Enhanced Safety Systems**
-- **Safety Configuration** (`tiny_code/safety_config.py`) - Four-tier safety levels (PERMISSIVE → PARANOID)
-- **Timeout Manager** (`tiny_code/timeout_manager.py`) - Plan and action-level timeout controls
-- **Audit Logger** (`tiny_code/audit_logger.py`) - Hash-chain integrity logging with tamper detection
-- Automatic backup creation, rollback capabilities, and path security validation
+**Plan-Based Execution Framework**
+- `plan_generator.py` - Creates detailed execution plans with risk assessment
+- `plan_executor.py` - Executes approved plans with progress tracking
+- `plan_validator.py` - Pre-execution validation, dangerous pattern detection
+- Plans stored persistently in `data/plans/` with JSON serialization
 
-**Foundation Components**
-- **Ollama Client** (`tiny_code/ollama_client.py`) - Abstraction layer for Ollama API communication
-- **Code Tools** (`tiny_code/tools.py`) - File system operations and code analysis
-- **CLI Interface** (`tiny_code/cli.py`) - Enhanced command-line interface with mode awareness
+**Safety Infrastructure**
+- `safety_config.py` - Four-tier safety levels (PERMISSIVE/STANDARD/STRICT/PARANOID)
+- `timeout_manager.py` - Plan and action-level timeout controls (default 5 min/30 sec)
+- `audit_logger.py` - Hash-chain integrity logging with tamper detection
+- `resource_monitor.py` - CPU/memory/disk monitoring with enforcement
+- `rate_limiter.py` - Token bucket algorithm for API rate limiting
 
-### RAG Infrastructure
+**RAG System** (`rag/`, `summarizer/`)
+- `rag/embeddings/local_embedder.py` - Local sentence-transformers (all-MiniLM-L6-v2)
+- `rag/vectorstore/faiss_store.py` - FAISS-based similarity search
+- `rag/retrieval/hybrid_retriever.py` - Dense + sparse search (70/30 weighting)
+- `rag/ingestion/` - Multi-format document processing (PDF, DOCX, code files)
+- `summarizer/core/rag_manager.py` - Central RAG orchestration
 
-**RAG Manager** (`summarizer/core/rag_manager.py`)
-- Central coordinator for all RAG operations
-- Manages knowledge bases (general, genetics, code)
-- Handles document ingestion and retrieval orchestration
-- Auto-loads existing knowledge bases on startup
+**Genetics Specialization** (`genetics/`)
+- `corpus_crawler.py` - Specialized bioinformatics documentation crawler
+- Pre-configured for HTS specs, GATK, samtools, NCBI sources
 
-**Embedding System** (`rag/embeddings/local_embedder.py`)
-- Local sentence-transformers (all-MiniLM-L6-v2)
-- Disk-based caching for embedding reuse
-- Batch processing with progress tracking
+**Plugin System** (`plugins/`)
+- `plugin_system.py` - Core plugin management and loading infrastructure
+- `utilities.py` - Text processing utilities (hash, encode/decode, UUID, timestamps)
+- `code_formatter.py` - Multi-language code formatting (Python, JS, TypeScript, Rust, Go, C/C++)
+- `web_scraper.py` - Web content extraction and scraping capabilities
+- Hot-reloadable plugins with dependency management and safety integration
 
-**Vector Store** (`rag/vectorstore/faiss_store.py`)
-- FAISS-based similarity search with adaptive indexing
-- Supports IVF, HNSW, and Flat index types
-- Automatically switches index types based on dataset size
-- Persistent storage with metadata
+**API Server** (`api_server.py`)
+- Flask-based REST API with Prometheus metrics
+- Health checks, rate limiting, API key authentication
+- Endpoints: /complete, /fix, /explain, /refactor, /test, /review
 
-**Hybrid Retrieval** (`rag/retrieval/hybrid_retriever.py`)
-- Combines dense embeddings with BM25 sparse search
-- Configurable weighting (default: 70% dense, 30% sparse)
-- Score normalization and metadata filtering
-
-**Document Processing** (`rag/ingestion/`)
-- Multi-format support: PDF, DOCX, PPTX, Excel, HTML, Markdown, code files
-- Intelligent text chunking with overlap
-- Metadata extraction and preservation
-
-**Genetics Corpus** (`genetics/corpus_crawler.py`)
-- Specialized crawler for bioinformatics documentation
-- Pre-configured sources: HTS specs, GATK, samtools, NCBI, etc.
-- Respects robots.txt and implements rate limiting
-
-### Configuration System
-
-**RAG Config** (`config/rag_config.yaml`)
-- Embedding model settings (dimension, batch size, caching)
-- Vector store configuration (index type, metrics, clustering)
-- Chunking strategies (size, overlap, semantic/code-aware)
-- Retrieval parameters (hybrid weighting, top-k, BM25 settings)
-- LLM settings (model, temperature, timeouts)
-
-**Genetics Sources** (`config/genetics_corpus.yaml`)
-- Curated bioinformatics documentation sources
-- Priority-based crawling with allow/deny patterns
-- Quality filters and metadata extraction rules
-
-### CLI Interface
-
-**Enhanced CLI** (`tiny_code_rag.py`)
-- Click-based command structure for all operations
-- Interactive mode with command history and auto-completion
-- Handles both RAG and basic coding operations
-- Rich-formatted output with progress indicators
+### Data Storage
+```
+data/
+├── index/faiss/       # FAISS vector indexes for RAG
+├── plans/             # Stored execution plans
+├── backups/           # Automatic backups before risky operations
+├── audit_logs/        # Hash-chain integrity logs
+├── embeddings_cache/  # Cached embeddings
+└── genetics_corpus/   # Downloaded genetics documentation
+```
 
 ### Operation Flow
 
-**Three-Mode Workflow**:
-1. **Chat Mode**: User questions → Agent → Read-only responses (no file modifications)
-2. **Propose Mode**: User request → Plan Generator → Detailed execution plan → User approval/rejection
-3. **Execute Mode**: Approved plan → Plan Validator → Safety Checks → Plan Executor → Secure execution with backups
+**Three-Mode Workflow:**
+1. **Chat Mode** (default): Safe Q&A, read-only file access, no modifications
+2. **Propose Mode**: Plan generation and review, `/plan "task"` creates execution plans
+3. **Execute Mode**: Execute approved plans with full safety features
 
-**Plan Execution Pipeline**:
-1. **Validation**: Plan Validator scans for security issues, path validation, content analysis
-2. **Safety Checks**: Safety Config enforces limits, Timeout Manager sets controls
-3. **Execution**: Plan Executor runs actions with progress tracking and audit logging
-4. **Backup & Rollback**: Automatic backup creation with rollback capabilities on failure
+**Critical Commands for Mode Control:**
+```bash
+/mode chat      # Switch to safe exploration mode
+/mode propose   # Switch to planning mode
+/mode execute   # Switch to execution mode
+/plan "task"    # Generate execution plan (in propose mode)
+/approve <id>   # Approve plan for execution
+/execute_plan <id>  # Execute approved plan (in execute mode)
+```
 
-**RAG Data Flow**:
-1. **Document Ingestion**: Files → Loader → Chunker → Embedder → Vector Store
-2. **Knowledge Base Storage**: FAISS indexes + metadata stored in `data/index/faiss/`
-3. **Search Process**: Query → Embedder → Hybrid Retriever → Results
-4. **RAG Response**: Query + Retrieved Context → TinyLlama → Enhanced Response
+**Enhanced File Operations:**
+```bash
+/find "*.py" --max 100        # Advanced file search with glob patterns
+/grep "function" --type py    # Search file contents with filters
+/tree /path/to/dir           # Directory structure visualization
+/compare file1.py file2.py   # Advanced file comparison
+/multi-edit pattern old new  # Multi-file find and replace
+```
 
-### Key Design Principles
+**Git Integration Commands:**
+```bash
+/git-status                  # Enhanced git status with file details
+/git-log --graph            # Visual commit history
+/git-branches               # Branch management and analysis
+/git-workflow               # Automated workflow operations
+/git-analyze                # Repository statistics and insights
+```
 
-- **100% Local**: No external API dependencies, all processing on-device
-- **Safety-First Architecture**: Multiple security layers with configurable risk tolerance
-- **Plan-Based Execution**: Review → Approve → Execute workflow for all file modifications
-- **Comprehensive Auditing**: Tamper-evident logging with hash chain integrity
-- **Mode Isolation**: Clear separation between safe exploration and execution modes
-- **Genetics-Focused**: Pre-configured for bioinformatics workflows
-- **Persistent Storage**: Knowledge bases and execution plans auto-load between sessions
-- **Enterprise Security**: Four-tier safety levels, timeout controls, and validation systems
+**System Integration Commands:**
+```bash
+/env VAR_NAME               # Environment variable management
+/processes --filter python  # Process monitoring and control
+/sysinfo                    # System resource information
+/monitor <pid>              # Real-time process monitoring
+```
 
-### Security Features
+**Plugin Management Commands:**
+```bash
+/plugins                    # List available plugins
+/plugin-enable utilities    # Enable a specific plugin
+/plugin-info web_scraper    # Get detailed plugin information
+/plugin-reload code_formatter # Hot-reload plugin during development
+```
 
-- **Pre-execution validation** with dangerous pattern detection
-- **Path traversal protection** and system path restrictions
-- **Execution timeouts** at plan and action levels
-- **Automatic backups** with rollback capabilities
-- **Audit logging** with hash chain integrity verification
-- **Configurable safety levels** (PERMISSIVE → PARANOID)
-- **Command categorization** with 31 commands across 5 safety categories
+**Error Handling Commands:**
+```bash
+/errors                     # Show recent error history
+/error-stats               # Error analytics and patterns
+/recover TC_1234567890     # Manual error recovery by ID
+```
 
-#### 🔒 Detailed Security Examples
+**Safety Features:**
+- Pre-execution validation scans for dangerous patterns (`rm -rf`, `DROP TABLE`, etc.)
+- Automatic backups before file modifications
+- Path traversal protection
+- Configurable safety levels affect confirmation requirements
+- Hash-chain audit logging for forensics
+- Timeout controls at plan (5 min) and action (30 sec) levels
 
-**Dangerous Pattern Detection:**
+### Configuration
+
+**RAG Configuration** (`config/rag_config.yaml`)
+- Embedding model: all-MiniLM-L6-v2 (384 dimensions)
+- Vector store: FAISS with adaptive indexing (IVF/HNSW/Flat)
+- Chunking: 800 chars default with 100 char overlap
+- Retrieval: Hybrid search with 0.7 dense / 0.3 sparse weighting
+
+**Genetics Sources** (`config/genetics_corpus.yaml`)
+- Pre-configured bioinformatics documentation sources
+- Rate-limited crawling with robots.txt respect
+
+## Documentation Structure
+
+The project documentation is organized in the `docs/` directory:
+
+```
+docs/
+├── getting-started/
+│   ├── installation.md      # Complete setup guide
+│   ├── quickstart.md        # 5-minute introduction
+│   └── offline-setup.md     # Offline deployment
+├── user-guide/
+│   ├── commands.md          # Command reference
+│   ├── modes.md            # Three-mode system
+│   ├── workflows.md        # Usage patterns
+│   └── safety.md           # Safety features
+├── advanced/
+│   ├── rag-system.md       # RAG architecture
+│   └── plan-execution.md   # Plan system details
+└── deployment/
+    ├── production.md       # Production setup
+    └── docker.md          # Container deployment
+```
+
+Key documentation files:
+- `README.md` - Project overview with links to detailed docs
+- `CONTRIBUTING.md` - Contribution guidelines
+- `CHANGELOG.md` - Version history
+- `LICENSE` - MIT license
+- `docs/reference/troubleshooting.md` - Comprehensive troubleshooting guide
+
+## Development Commands Summary
+
+For convenience, TinyCode includes a Makefile with common development tasks:
+
+```bash
+make help          # Show all available commands
+make quick-start   # Complete setup for new developers
+make bootstrap     # Install dependencies and download models
+make dev           # Start API server
+make cli           # Start interactive CLI
+make test          # Run tests
+make docker-up     # Start Docker services
+make verify        # Verify offline setup
+make clean         # Clean up artifacts
+```
+
+## Enhanced Architecture Patterns
+
+### Command Registration Pattern
+TinyCode uses a centralized command registry pattern (`command_registry.py`) where all commands are categorized by:
+- **Safety Level**: NONE, LOW, MEDIUM, HIGH, CRITICAL
+- **Mode Availability**: Which operation modes can execute the command
+- **Category**: SAFE, PLANNING, MODIFICATION, EXECUTION, SYSTEM
+
+When adding new commands:
+1. Register in `CommandRegistry._register_all_commands()`
+2. Implement handler method in `TinyCodeCLI`
+3. Add to the commands dictionary in `handle_command()`
+
+### Plugin Development Pattern
+Plugins extend TinyCode through a standardized interface:
+1. Inherit from `PluginBase`
+2. Implement `get_metadata()` returning `PluginMetadata`
+3. Register commands in `initialize()` using `register_command()`
+4. Commands are accessed via `/plugin_name command_name args`
+
+Example plugin structure:
 ```python
-# These patterns trigger HIGH/CRITICAL risk flags:
-"rm -rf /", "sudo rm", "format", "delete *"
-"DROP TABLE", "TRUNCATE", "chmod 777"
-"eval()", "exec()", "subprocess.call(user_input)"
+class MyPlugin(PluginBase):
+    def get_metadata(self) -> PluginMetadata:
+        return PluginMetadata(name="my_plugin", version="1.0.0", ...)
+
+    def initialize(self) -> bool:
+        self.register_command(PluginCommand(...))
+        return True
 ```
 
-**Safety Level Guide:**
-- **PERMISSIVE**: Development/testing (warnings only)
-- **MODERATE**: Standard development (confirmation for medium+ risk)
-- **STRICT**: Production-like (confirmation for low+ risk, backups required)
-- **PARANOID**: Maximum security (confirmation for everything, full auditing)
+### Error Handling Integration
+The system uses context managers for consistent error handling:
+- `error_context()` - Wraps operations with automatic error categorization
+- `ErrorRecoveryManager` - Centralized error tracking and recovery
+- All commands should use `with error_context(self.error_manager, action, category)`
 
-**Rollback Procedures:**
-1. Plans automatically create timestamped backups in `data/backups/`
-2. On failure: `/rollback <execution_id>` restores from backup
-3. Audit logs provide complete change history for forensics
-4. Hash chain validation ensures backup integrity
+### CLI Enhancement Pattern
+CLI features are modularized in `cli_enhancements.py`:
+- Command completion via `TinyCodeCompleter`
+- Usage analytics in SQLite database
+- History management with intelligent suggestions
+- All enhancements integrate with the main CLI loop
 
-**Command Risk Categories:**
-```bash
-# NONE (always allowed): help, status, list, show
-# LOW (minimal checks): read, search, analyze
-# MEDIUM (confirmation in strict+): create, modify basic files
-# HIGH (backup + confirmation): refactor, install, configure
-# CRITICAL (full validation): delete, execute shell, system changes
-```
+## Development Guidelines
 
-## 📚 Step-by-Step Tutorials
+### Adding New File Operations
+File operations should use `AdvancedFileOperations` class in `tools.py`:
+- Support glob patterns for file matching
+- Include metadata (size, modified time, permissions)
+- Implement proper error handling and validation
+- Consider safety implications and required backups
 
-### Tutorial 1: First-Time Setup for Claude Instances
-```bash
-# 1. Verify prerequisites
-ollama list | grep tinyllama        # Should show tinyllama:latest
-python --version                    # Should be 3.8+
+### Extending Git Integration
+Git operations are centralized in `git_operations.py`:
+- Use `GitOperations` class for all git interactions
+- Parse command output into structured data classes
+- Handle non-git directories gracefully
+- Provide both basic and advanced operation modes
 
-# 2. Test basic functionality
-python tiny_code_rag.py search "test" --kb code
-python tiny_code_rag.py
+### System Integration Best Practices
+When adding system integration features:
+- Use `psutil` for cross-platform compatibility
+- Implement resource monitoring and limits
+- Provide filtering and formatting options
+- Consider security implications of system access
 
-# 3. In interactive mode - verify modes work
-/mode status                        # Check current mode
-/mode propose                       # Test mode switching
-/mode chat                          # Return to safe mode
-```
+## Troubleshooting
 
-### Tutorial 2: Safe Development Workflow
-```bash
-# 1. Start in Chat mode (default) - analyze first
-python tiny_code_rag.py
-> /rag "existing code structure"    # Understand codebase
-> /analyze existing_file.py         # Review current code
-
-# 2. Switch to Propose mode - plan changes
-> /mode propose
-> /plan "Add error handling to user input validation"
-> /list_plans                       # Review generated plan
-> /show_plan <plan_id>              # Examine details
-
-# 3. Approve if safe, then execute
-> /approve <plan_id>                # Mark plan as approved
-> /mode execute                     # Switch to execution mode
-> /execute_plan <plan_id>           # Run with safety checks
-```
-
-### Tutorial 3: Working with RAG System
-```bash
-# 1. Ingest project documentation
-python tiny_code_rag.py ingest README.md --kb general
-python tiny_code_rag.py ingest src/ --kb code
-
-# 2. Use RAG for development decisions
-python tiny_code_rag.py ask "How should I structure error handling?" --kb code
-python tiny_code_rag.py search "authentication patterns" --kb general
-
-# 3. Get genetics-specific help (if applicable)
-python tiny_code_rag.py setup-genetics --max-pages 30
-python tiny_code_rag.py ask "SAM file parsing best practices" --kb genetics
-```
-
-## 🔧 Environment Validation Checklist
-
-### Pre-Flight Check for Claude Instances
-```bash
-# ✅ System Requirements
-python --version                    # Must be 3.8+
-pip list | grep -E "(faiss|sentence-transformers|rich|click)"
-
-# ✅ Ollama Setup
-ollama list                         # Verify TinyLlama available
-ollama run tinyllama "test"         # Quick functionality test
-
-# ✅ RAG System Health
-python tiny_code_rag.py search "test" --kb code  # Should return results
-ls data/index/faiss/               # Should show code_index, general_index
-
-# ✅ Mode System Test
-python -c "from tiny_code.mode_manager import ModeManager; print('✅ Mode system ready')"
-```
-
-### Common Setup Issues & Solutions
-| Issue | Symptoms | Solution |
-|-------|----------|----------|
-| Missing TinyLlama | "Model not found" | `ollama pull tinyllama` |
-| Permission errors | "Cannot write to data/" | `chmod 755 data/` or run from project root |
-| Import errors | "ModuleNotFoundError" | `pip install -r requirements.txt` |
-| Empty knowledge base | "No relevant documents" | Run ingestion first |
-| Mode switching fails | "Command not allowed" | Check current mode with `/mode status` |
-
-## 🚀 Advanced Usage Patterns
-
-### Pattern 1: Multi-Step Development Project
-```bash
-# Step 1: Research and plan
-/mode chat
-/rag "project requirements and constraints"
-/analyze existing_codebase/
-
-# Step 2: Generate comprehensive plan
-/mode propose
-/plan "Implement user authentication with JWT tokens, including login/logout routes, middleware, and tests"
-/show_plan <id>  # Review automatically generated sub-tasks
-
-# Step 3: Execute with safety
-/approve <id>
-/mode execute
-/execute_plan <id>  # Runs with backups and progress tracking
-```
-
-### Pattern 2: High-Risk Operations
-```bash
-# For operations involving deletions, refactoring, or system changes
-/mode propose
-/plan "Refactor database schema and migrate existing data"
-# System automatically detects HIGH/CRITICAL risk patterns
-# Plan requires explicit confirmation and backup creation
-/show_plan <id>  # Review risk assessment and safety measures
-/approve <id>    # Only after careful review
-/mode execute
-/execute_plan <id>  # Executes with full safety protocol
-```
-
-### Pattern 3: Knowledge Base Optimization
-```bash
-# Build comprehensive knowledge base for better RAG responses
-python tiny_code_rag.py ingest docs/ --kb general
-python tiny_code_rag.py ingest src/ --kb code
-python tiny_code_rag.py ingest tests/ --kb code
-python tiny_code_rag.py setup-genetics --max-pages 50  # If applicable
-
-# Test knowledge quality
-python tiny_code_rag.py search "error handling patterns" --kb code
-python tiny_code_rag.py ask "What testing frameworks are used?" --kb general
-```
-
-### Pattern 4: Plan Templates for Common Tasks
-```bash
-# File Creation Template
-/plan "Create [filename] with [functionality] including error handling and tests"
-
-# Refactoring Template
-/plan "Refactor [component] to improve [specific aspect] while maintaining backward compatibility"
-
-# Integration Template
-/plan "Integrate [library/service] with existing [system] including configuration and tests"
-```
-
-### Known Issues
-
-- Interactive mode requires terminal input (CLI commands work in all environments)
-- Large document sets may require memory optimization via config adjustments
-- Initial genetics corpus setup can take 10-30 minutes depending on source availability
-- Plan execution in Execute mode assumes approval for immediate changes
+If you encounter issues:
+1. Run `make verify` to check system health
+2. Check `docs/reference/troubleshooting.md` for solutions
+3. Use `make health` for system diagnostics
+4. Test plugin system with `python test_plugin_system.py`
