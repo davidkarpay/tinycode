@@ -33,26 +33,38 @@ class RAGEnhancedCLI(TinyCodeCLI):
     def show_help(self):
         """Show enhanced help with RAG commands"""
         help_text = """
-        [bold cyan]Tiny Code RAG Commands:[/bold cyan]
+        [bold cyan]Tiny Code with RAG (Retrieval Augmented Generation):[/bold cyan]
+
+        [bold green]What is RAG?[/bold green]
+        RAG enhances AI responses by retrieving relevant documents before generating answers.
+        This provides more accurate, contextual, and up-to-date information.
+
+        [yellow]Knowledge Bases Available:[/yellow]
+        • general - Programming and technical documentation
+        • genetics - Bioinformatics, genomics, SAM/BAM/VCF formats
+        • code - Code examples, patterns, and best practices
 
         [yellow]Chat & RAG:[/yellow]
-        Just type your question (uses RAG context when available)
+        Just type your question (automatically uses RAG context when available)
+        Example: "How do I parse a VCF file?" (uses genetics knowledge base)
 
         [yellow]RAG Commands (prefix with /):[/yellow]
-        /ingest <path>        - Ingest documents into RAG system
-        /rag <query>          - Search RAG knowledge base
-        /summarize <path>     - Summarize a document
-        /chat <question>      - Chat with documents
-        /genetics <concept>   - Explain genetics concept
-        /knowledge <base>     - Switch knowledge base (general/genetics/code)
-        /setup_genetics       - Set up genetics knowledge base
-        /rag_stats           - Show RAG system statistics
+        /explain_rag          - Learn how RAG works and how to use it effectively
+        /rag <query>          - Search RAG knowledge base directly
+        /chat <question>      - Chat with documents using current knowledge base
+        /knowledge <base>     - Switch active knowledge base (general/genetics/code)
+        /rag_stats           - Show RAG system statistics and knowledge base info
 
-        [yellow]Enhanced File Commands:[/yellow]
-        /file <path>          - Load file (with RAG context)
-        /analyze <path>       - Analyze file (RAG-enhanced)
-        /explain <path>       - Explain code (with context)
-        /review <path>        - Review code (RAG-enhanced)
+        [yellow]Document Management:[/yellow]
+        /ingest <path>        - Add documents to RAG system
+        /summarize <path>     - Summarize a document using RAG
+        /setup_genetics       - Download and ingest genetics documentation
+        /genetics <concept>   - Explain genetics concept using knowledge base
+
+        [yellow]RAG-Enhanced File Commands:[/yellow]
+        /explain <path>       - Explain code with retrieved context and examples
+        /review <path>        - Review code with best practices from knowledge base
+        /analyze <path>       - Analyze file with relevant documentation context
 
         [yellow]Standard Commands:[/yellow]
         /complete <path>      - Complete code in file
@@ -68,7 +80,7 @@ class RAGEnhancedCLI(TinyCodeCLI):
         clear   - Clear screen
         exit    - Quit the program
         """
-        console.print(Panel(help_text, title="Enhanced Help", border_style="blue"))
+        console.print(Panel(help_text, title="RAG-Enhanced TinyCode Help", border_style="blue"))
 
     def handle_command(self, command: str):
         """Handle enhanced commands including RAG with mode awareness"""
@@ -90,6 +102,7 @@ class RAGEnhancedCLI(TinyCodeCLI):
         # RAG-specific commands (mostly safe, some require execution mode)
         rag_commands = {
             # Safe RAG commands
+            'explain_rag': self._explain_rag_system,
             'rag': self._rag_search,
             'summarize': self._summarize_document,
             'chat': self._chat_with_documents,
@@ -198,6 +211,59 @@ class RAGEnhancedCLI(TinyCodeCLI):
                 console.print("[green]Genetics knowledge base setup complete![/green]")
             except Exception as e:
                 console.print(f"[red]Setup failed: {e}[/red]")
+
+    def _explain_rag_system(self, args):
+        """Explain how RAG (Retrieval Augmented Generation) works"""
+        explanation = """
+        [bold cyan]RAG (Retrieval Augmented Generation) Explained[/bold cyan]
+
+        [bold green]What is RAG?[/bold green]
+        RAG is an AI technique that enhances language model responses by retrieving relevant
+        documents before generating answers. Instead of relying only on training data,
+        RAG systems can access current, specific information.
+
+        [bold green]How TinyCode's RAG Works:[/bold green]
+        1. [yellow]Document Ingestion[/yellow]: Documents are processed and stored in vector databases
+        2. [yellow]Query Processing[/yellow]: When you ask a question, it's converted to a search vector
+        3. [yellow]Retrieval[/yellow]: Similar documents are found using vector similarity search
+        4. [yellow]Context Addition[/yellow]: Retrieved documents are added to your query as context
+        5. [yellow]Enhanced Generation[/yellow]: The AI generates responses using both its training and retrieved context
+
+        [bold green]Available Knowledge Bases:[/bold green]
+        • [cyan]general[/cyan] - Programming docs, technical specifications, general knowledge
+        • [cyan]genetics[/cyan] - Bioinformatics tools (GATK, samtools), file formats (SAM/BAM/VCF), genomics workflows
+        • [cyan]code[/cyan] - Code examples, programming patterns, best practices
+
+        [bold green]Benefits of RAG:[/bold green]
+        ✓ More accurate technical information
+        ✓ Access to up-to-date documentation
+        ✓ Context-aware recommendations
+        ✓ Specific examples and code patterns
+        ✓ Reduced hallucination for technical details
+
+        [bold green]Example Usage:[/bold green]
+        [dim]# Switch to genetics knowledge base[/dim]
+        /knowledge genetics
+
+        [dim]# Ask a genetics question (RAG automatically retrieves relevant docs)[/dim]
+        "How do I filter variants in a VCF file with bcftools?"
+
+        [dim]# Search knowledge base directly[/dim]
+        /rag "VCF filtering bcftools"
+
+        [dim]# Ingest your own documents[/dim]
+        /ingest /path/to/your/docs
+
+        [bold green]Best Practices:[/bold green]
+        • Use specific, technical language in queries for better retrieval
+        • Switch knowledge bases based on your domain (/knowledge <base>)
+        • Ingest project-specific documentation for better context
+        • Use /rag_stats to see what's available in each knowledge base
+
+        [bold yellow]Current Knowledge Base:[/bold yellow] {current_kb}
+        """.format(current_kb=self.agent.current_knowledge_base)
+
+        console.print(Panel(explanation, title="RAG System Guide", border_style="cyan"))
 
     def _show_rag_stats(self):
         """Show RAG statistics"""
