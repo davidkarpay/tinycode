@@ -12,6 +12,7 @@ from .ollama_client import OllamaClient
 from .tools import CodeTools
 from .prompts import *
 from .self_awareness import SelfAwareness
+from .knowledge import CodeEvaluator, EvaluationResult
 
 console = Console()
 
@@ -25,6 +26,7 @@ class TinyCodeAgent:
         self.current_file = None
         self.workspace = Path.cwd()
         self.self_awareness = SelfAwareness()
+        self.code_evaluator = CodeEvaluator()
 
     def complete_code(self, code_context: str, requirements: str = "") -> str:
         """Complete code based on context"""
@@ -63,11 +65,71 @@ class TinyCodeAgent:
         response = self.client.generate(prompt, system=SYSTEM_PROMPT)
         return response
 
-    def review_code(self, code: str) -> str:
-        """Review code and provide feedback"""
-        prompt = CODE_REVIEW_PROMPT.format(code=code)
-        response = self.client.generate(prompt, system=SYSTEM_PROMPT)
-        return response
+    def review_code(self, code: str, filepath: str = "", use_principles: bool = True) -> str:
+        """Review code and provide feedback with optional principle-based evaluation"""
+        if use_principles:
+            # Use principle-based evaluation
+            evaluation = self.code_evaluator.evaluate_code(code, filepath)
+
+            # Format the evaluation result into a comprehensive review
+            review_parts = []
+
+            # Overall assessment
+            review_parts.append(f"## Code Quality Assessment")
+            review_parts.append(f"**Overall Score: {evaluation.overall_score:.1f}/10.0**")
+            review_parts.append("")
+
+            # Quality dimensions
+            review_parts.append("### Quality Dimensions")
+            for score in evaluation.quality_scores:
+                status = "✅" if score.score >= 8.0 else "⚠️" if score.score >= 6.0 else "❌"
+                review_parts.append(f"- {status} **{score.dimension.value.title()}**: {score.score:.1f}/10.0")
+                if score.details:
+                    review_parts.append(f"  - {score.details}")
+            review_parts.append("")
+
+            # Recommendations
+            if evaluation.recommendations:
+                review_parts.append("### Recommendations")
+                for i, rec in enumerate(evaluation.recommendations, 1):
+                    severity_icon = {"critical": "🚨", "high": "⚠️", "medium": "💡", "low": "📝"}
+                    icon = severity_icon.get(rec.severity.value, "💡")
+                    review_parts.append(f"{i}. {icon} **{rec.message}**")
+                    if rec.suggested_fix:
+                        review_parts.append(f"   - **Fix**: {rec.suggested_fix}")
+                    if rec.rationale:
+                        review_parts.append(f"   - **Why**: {rec.rationale}")
+                    review_parts.append("")
+
+            # Code metrics
+            if evaluation.metrics:
+                review_parts.append("### Code Metrics")
+                metrics = evaluation.metrics
+                review_parts.append(f"- Lines of Code: {metrics.lines_of_code}")
+                review_parts.append(f"- Functions: {metrics.function_count}")
+                review_parts.append(f"- Classes: {metrics.class_count}")
+                review_parts.append(f"- Cyclomatic Complexity: {metrics.cyclomatic_complexity}")
+                if metrics.max_function_length > 0:
+                    review_parts.append(f"- Max Function Length: {metrics.max_function_length} lines")
+                review_parts.append("")
+
+            # Save evaluation for learning
+            self.code_evaluator.save_evaluation_result(evaluation)
+
+            principled_review = "\n".join(review_parts)
+
+            # Also get LLM-based review for additional insights
+            prompt = CODE_REVIEW_PROMPT.format(code=code)
+            llm_review = self.client.generate(prompt, system=SYSTEM_PROMPT)
+
+            # Combine both reviews
+            combined_review = f"{principled_review}\n\n### Additional AI Analysis\n{llm_review}"
+            return combined_review
+        else:
+            # Use traditional LLM-based review
+            prompt = CODE_REVIEW_PROMPT.format(code=code)
+            response = self.client.generate(prompt, system=SYSTEM_PROMPT)
+            return response
 
     def chat(self, message: str, stream: bool = False) -> str:
         """Interactive chat with the agent"""
@@ -186,6 +248,34 @@ class TinyCodeAgent:
             console.print(Panel(f"Error: {stderr}", style="red"))
 
         return result
+
+    def evaluate_code_principles(self, code: str, filepath: str = "", focus_areas: Optional[List[str]] = None) -> EvaluationResult:
+        """Evaluate code against software development principles"""
+        # Convert string focus areas to PrincipleCategory enum if provided
+        principle_categories = None
+        if focus_areas:
+            from .knowledge.software_principles import PrincipleCategory
+            principle_categories = []
+            for area in focus_areas:
+                try:
+                    category = PrincipleCategory(area.lower())
+                    principle_categories.append(category)
+                except ValueError:
+                    console.print(f"[yellow]Warning: Unknown principle category '{area}'[/yellow]")
+
+        return self.code_evaluator.evaluate_code(code, filepath, focus_areas=principle_categories)
+
+    def get_principle_summary(self, category: Optional[str] = None) -> Dict[str, Any]:
+        """Get summary of available software development principles"""
+        if category:
+            from .knowledge.software_principles import PrincipleCategory
+            try:
+                cat_enum = PrincipleCategory(category.lower())
+                return self.code_evaluator.get_principle_summary(cat_enum)
+            except ValueError:
+                return {"error": f"Unknown principle category: {category}"}
+        else:
+            return self.code_evaluator.get_principle_summary()
 
     def save_response(self, response: str, filepath: Optional[str] = None) -> bool:
         """Save generated response to a file"""

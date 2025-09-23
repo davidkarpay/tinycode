@@ -416,7 +416,7 @@ class ErrorRecoveryManager:
         # Choose color based on severity
         severity_colors = {
             ErrorSeverity.LOW: "yellow",
-            ErrorSeverity.MEDIUM: "orange",
+            ErrorSeverity.MEDIUM: "yellow",
             ErrorSeverity.HIGH: "red",
             ErrorSeverity.CRITICAL: "bright_red"
         }

@@ -14,6 +14,7 @@ class OperationMode(Enum):
     CHAT = "chat"          # Safe exploration, Q&A only
     PROPOSE = "propose"    # Plan generation and review
     EXECUTE = "execute"    # Execute approved plans
+    PARALEGAL = "paralegal"  # Legal automation with privilege protection
 
 class ModeManager:
     """Manages operation modes and command permissions"""
@@ -57,7 +58,8 @@ class ModeManager:
         descriptions = {
             OperationMode.CHAT: "Safe exploration and Q&A mode. No file modifications allowed.",
             OperationMode.PROPOSE: "Plan generation mode. Review and approve changes before execution.",
-            OperationMode.EXECUTE: "Execution mode. Run approved plans or make immediate changes."
+            OperationMode.EXECUTE: "Execution mode. Run approved plans or make immediate changes.",
+            OperationMode.PARALEGAL: "Legal automation mode. Enhanced security with attorney-client privilege protection."
         }
 
         return descriptions.get(mode, "Unknown mode")
@@ -76,7 +78,8 @@ class ModeManager:
         mode_colors = {
             OperationMode.CHAT: "green",
             OperationMode.PROPOSE: "yellow",
-            OperationMode.EXECUTE: "red"
+            OperationMode.EXECUTE: "red",
+            OperationMode.PARALEGAL: "magenta"
         }
 
         color = mode_colors.get(new_mode, "white")
@@ -111,12 +114,20 @@ class ModeManager:
   - Full access to all system capabilities
   - Automatic backups and safety features
 
+[magenta]• PARALEGAL MODE[/magenta]
+  - Legal document automation and case analysis
+  - Enhanced security with attorney-client privilege protection
+  - Specialized legal tools (citations, deadlines, conflicts)
+  - Comprehensive audit logging for legal operations
+  - OODA loop analysis for legal reasoning
+
 [bold cyan]Mode Commands:[/bold cyan]
-  /mode chat     - Switch to Chat mode
-  /mode propose  - Switch to Propose mode
-  /mode execute  - Switch to Execute mode
-  /mode status   - Show current mode and available commands
-  /mode help     - Show this help
+  /mode chat      - Switch to Chat mode
+  /mode propose   - Switch to Propose mode
+  /mode execute   - Switch to Execute mode
+  /mode paralegal - Switch to Paralegal mode
+  /mode status    - Show current mode and available commands
+  /mode help      - Show this help
         """
 
         console.print(Panel(help_text, title="Mode System Help", border_style="blue"))
@@ -197,7 +208,7 @@ class ModeManager:
             danger_color = {
                 DangerLevel.NONE: "[green]",
                 DangerLevel.LOW: "[yellow]",
-                DangerLevel.MEDIUM: "[dark_orange]",
+                DangerLevel.MEDIUM: "[yellow]",
                 DangerLevel.HIGH: "[red]",
                 DangerLevel.CRITICAL: "[bold red]"
             }.get(cmd.danger_level, "[white]")

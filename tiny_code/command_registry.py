@@ -11,6 +11,7 @@ class CommandCategory(Enum):
     MODIFICATION = "modification"    # File modifications
     EXECUTION = "execution"         # Code execution and system operations
     SYSTEM = "system"               # System-level operations
+    LEGAL = "legal"                 # Legal automation and analysis
 
 class DangerLevel(Enum):
     """Danger levels for command operations"""
@@ -32,6 +33,7 @@ class CommandInfo:
     allowed_in_chat: bool = False
     allowed_in_propose: bool = False
     allowed_in_execute: bool = False
+    allowed_in_paralegal: bool = False
 
 class CommandRegistry:
     """Registry for all TinyCode commands with detailed categorization"""
@@ -202,6 +204,15 @@ class CommandRegistry:
             CommandInfo("recover", CommandCategory.SAFE, DangerLevel.NONE,
                        "Manually attempt error recovery",
                        allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            # Software development principles commands
+            CommandInfo("principles", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Show available software development principles and categories",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
+
+            CommandInfo("evaluate", CommandCategory.SAFE, DangerLevel.NONE,
+                       "Evaluate code against software development principles",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
         ]
 
         # Planning commands (propose mode and above)
@@ -366,8 +377,172 @@ class CommandRegistry:
                        allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True),
         ]
 
+        # Legal commands (paralegal mode and execute mode)
+        legal_commands = [
+            # Safe legal commands (available in chat, propose, execute, paralegal)
+            CommandInfo("validate_citation", CommandCategory.LEGAL, DangerLevel.NONE,
+                       "Validate legal citations for accuracy and format",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("authority_hierarchy", CommandCategory.LEGAL, DangerLevel.NONE,
+                       "Analyze legal authority hierarchy and binding precedent",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("legal_search", CommandCategory.LEGAL, DangerLevel.NONE,
+                       "Search legal knowledge base for cases and statutes",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("legal_reasoning", CommandCategory.LEGAL, DangerLevel.LOW,
+                       "Perform extended legal reasoning analysis",
+                       allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("constitutional_analysis", CommandCategory.LEGAL, DangerLevel.MEDIUM,
+                       "Analyze constitutional issues with precedent review",
+                       allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("jurisdiction_compare", CommandCategory.LEGAL, DangerLevel.LOW,
+                       "Compare legal approaches across jurisdictions",
+                       allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("precedent_analysis", CommandCategory.LEGAL, DangerLevel.LOW,
+                       "Analyze case precedent and distinguishing factors",
+                       allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("statute_interpretation", CommandCategory.LEGAL, DangerLevel.MEDIUM,
+                       "Interpret statutes with legislative history analysis",
+                       allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            # OODA loop legal analysis commands
+            CommandInfo("start_case_analysis", CommandCategory.LEGAL, DangerLevel.MEDIUM,
+                       "Start OODA loop case analysis process", requires_confirmation=True,
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            CommandInfo("observe_facts", CommandCategory.LEGAL, DangerLevel.LOW,
+                       "OODA Observe phase: gather case facts and sources",
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            CommandInfo("orient_issues", CommandCategory.LEGAL, DangerLevel.LOW,
+                       "OODA Orient phase: identify legal issues and map precedents",
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            CommandInfo("decide_strategy", CommandCategory.LEGAL, DangerLevel.MEDIUM,
+                       "OODA Decide phase: formulate legal strategy",
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            CommandInfo("act_execute", CommandCategory.LEGAL, DangerLevel.HIGH,
+                       "OODA Act phase: generate documents and execute tactics", requires_confirmation=True,
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            CommandInfo("generate_legal_report", CommandCategory.LEGAL, DangerLevel.MEDIUM,
+                       "Generate comprehensive legal analysis report",
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            # Deadline and calendar management
+            CommandInfo("calculate_deadlines", CommandCategory.LEGAL, DangerLevel.LOW,
+                       "Calculate court deadlines based on jurisdiction rules",
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            CommandInfo("conflict_check", CommandCategory.LEGAL, DangerLevel.CRITICAL,
+                       "Check for conflicts of interest", requires_confirmation=True,
+                       allowed_in_paralegal=True),
+
+            # Document generation and templates
+            CommandInfo("motion_template", CommandCategory.LEGAL, DangerLevel.MEDIUM,
+                       "Generate legal motion templates", requires_backup=True,
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            CommandInfo("legal_memo", CommandCategory.LEGAL, DangerLevel.MEDIUM,
+                       "Generate legal memorandum", requires_backup=True,
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            CommandInfo("brief_outline", CommandCategory.LEGAL, DangerLevel.LOW,
+                       "Create legal brief outline and structure",
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            # Privilege and confidentiality
+            CommandInfo("privilege_scan", CommandCategory.LEGAL, DangerLevel.CRITICAL,
+                       "Scan documents for privilege and confidentiality issues",
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            CommandInfo("redact_document", CommandCategory.LEGAL, DangerLevel.HIGH,
+                       "Redact privileged information from documents", requires_confirmation=True, requires_backup=True,
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            CommandInfo("privilege_log", CommandCategory.LEGAL, DangerLevel.MEDIUM,
+                       "Generate privilege log for document production",
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            # Case and matter management
+            CommandInfo("case_tracker", CommandCategory.LEGAL, DangerLevel.LOW,
+                       "Track case progress and deadlines",
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            CommandInfo("billing_tracker", CommandCategory.LEGAL, DangerLevel.MEDIUM,
+                       "Track time and billing for legal work",
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            CommandInfo("matter_summary", CommandCategory.LEGAL, DangerLevel.LOW,
+                       "Generate matter summary and status report",
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            # Specialized Florida law commands
+            CommandInfo("florida_statute_lookup", CommandCategory.LEGAL, DangerLevel.NONE,
+                       "Look up Florida statutes with current status",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("florida_dca_analysis", CommandCategory.LEGAL, DangerLevel.LOW,
+                       "Analyze Florida DCA binding authority by district",
+                       allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("florida_rules_check", CommandCategory.LEGAL, DangerLevel.LOW,
+                       "Check Florida court rules and procedures",
+                       allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            # Advanced legal analysis
+            CommandInfo("mega_brief_analysis", CommandCategory.LEGAL, DangerLevel.HIGH,
+                       "Comprehensive 64K token legal analysis", requires_confirmation=True,
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            CommandInfo("hallucination_check", CommandCategory.LEGAL, DangerLevel.LOW,
+                       "Check legal analysis for potential hallucinations",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("legal_audit", CommandCategory.LEGAL, DangerLevel.MEDIUM,
+                       "Audit legal work for compliance and accuracy",
+                       allowed_in_paralegal=True, allowed_in_execute=True),
+
+            # Legal Writing Knowledge System Commands
+            CommandInfo("writing_principles", CommandCategory.LEGAL, DangerLevel.NONE,
+                       "Show legal writing principles and best practices",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("writing_evaluate", CommandCategory.LEGAL, DangerLevel.NONE,
+                       "Evaluate legal document against writing principles",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("document_templates", CommandCategory.LEGAL, DangerLevel.NONE,
+                       "Show available legal document templates",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("generate_template", CommandCategory.LEGAL, DangerLevel.LOW,
+                       "Generate legal document from template",
+                       allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("citation_check", CommandCategory.LEGAL, DangerLevel.NONE,
+                       "Validate citation format and accuracy",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("irac_analysis", CommandCategory.LEGAL, DangerLevel.NONE,
+                       "Generate IRAC/CRAC/CREAC analysis framework",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+
+            CommandInfo("writing_score", CommandCategory.LEGAL, DangerLevel.NONE,
+                       "Get writing quality score and detailed analysis",
+                       allowed_in_chat=True, allowed_in_propose=True, allowed_in_execute=True, allowed_in_paralegal=True),
+        ]
+
         # Register all commands
-        all_commands = safe_commands + planning_commands + modification_commands + execution_commands + system_commands + plugin_commands
+        all_commands = safe_commands + planning_commands + modification_commands + execution_commands + system_commands + plugin_commands + legal_commands
 
         for cmd in all_commands:
             self.commands[cmd.name] = cmd

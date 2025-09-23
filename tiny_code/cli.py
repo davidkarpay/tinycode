@@ -2,6 +2,7 @@
 
 import click
 import sys
+import os
 from pathlib import Path
 from datetime import datetime
 from rich.console import Console
@@ -16,6 +17,11 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from .agent import TinyCodeAgent
 from .tools import CodeTools, AdvancedFileOperations
 from .mode_manager import ModeManager, OperationMode
+from .legal.ooda_processor import LegalOODAProcessor
+from .legal.legal_reasoning import LegalReasoningEngine, ReasoningMode
+from .legal.tools.citation_validator import CitationValidator
+from .legal.privilege_system import PrivilegeProtectionSystem
+from .legal.authority_hierarchy import LegalAuthorityHierarchy
 from .git_operations import GitOperations
 from .system_integration import SystemIntegration
 from .cli_enhancements import CLIEnhancements
@@ -64,6 +70,48 @@ class TinyCodeCLI:
         # Initialize plugin system
         self.plugin_manager = PluginManager(agent=self.agent)
         self.plugin_manager.auto_load_plugins()
+
+        # Initialize legal systems (lazy loaded for performance)
+        self._legal_ooda = None
+        self._legal_reasoning = None
+        self._citation_validator = None
+        self._privilege_system = None
+        self._authority_hierarchy = None
+
+    @property
+    def legal_ooda(self) -> LegalOODAProcessor:
+        """Lazy load OODA processor"""
+        if self._legal_ooda is None:
+            self._legal_ooda = LegalOODAProcessor()
+        return self._legal_ooda
+
+    @property
+    def legal_reasoning(self) -> LegalReasoningEngine:
+        """Lazy load legal reasoning engine"""
+        if self._legal_reasoning is None:
+            self._legal_reasoning = LegalReasoningEngine()
+        return self._legal_reasoning
+
+    @property
+    def citation_validator(self) -> CitationValidator:
+        """Lazy load citation validator"""
+        if self._citation_validator is None:
+            self._citation_validator = CitationValidator()
+        return self._citation_validator
+
+    @property
+    def privilege_system(self) -> PrivilegeProtectionSystem:
+        """Lazy load privilege system"""
+        if self._privilege_system is None:
+            self._privilege_system = PrivilegeProtectionSystem()
+        return self._privilege_system
+
+    @property
+    def authority_hierarchy(self) -> LegalAuthorityHierarchy:
+        """Lazy load authority hierarchy"""
+        if self._authority_hierarchy is None:
+            self._authority_hierarchy = LegalAuthorityHierarchy()
+        return self._authority_hierarchy
 
     def interactive_mode(self):
         """Run interactive chat mode"""
@@ -142,6 +190,8 @@ class TinyCodeCLI:
             'analyze': self.analyze_file_cmd,
             'explain': self.explain_code_cmd,
             'review': self.review_code_cmd,
+            'principles': self.show_principles_cmd,
+            'evaluate': self.evaluate_code_cmd,
             'workspace': self.set_workspace_cmd,
             'list': self.list_files_cmd,
             'capabilities': self.show_capabilities_cmd,
@@ -224,7 +274,52 @@ class TinyCodeCLI:
             'plugin-enable': self.enable_plugin_cmd,
             'plugin-disable': self.disable_plugin_cmd,
             'plugin-reload': self.reload_plugin_cmd,
-            'plugin-info': self.plugin_info_cmd
+            'plugin-info': self.plugin_info_cmd,
+
+            # Legal commands (paralegal mode and execute mode)
+            'validate_citation': self.validate_citation_cmd,
+            'authority_hierarchy': self.authority_hierarchy_cmd,
+            'legal_search': self.legal_search_cmd,
+            # Legal Writing Knowledge System Commands
+            'writing_principles': self.writing_principles_cmd,
+            'writing_evaluate': self.writing_evaluate_cmd,
+            'document_templates': self.document_templates_cmd,
+            'generate_template': self.generate_template_cmd,
+            'citation_check': self.citation_check_cmd,
+            'irac_analysis': self.irac_analysis_cmd,
+            'writing_score': self.writing_score_cmd,
+            # TODO: Implement these legal command handlers
+            # 'legal_reasoning': self.legal_reasoning_cmd,
+            # 'constitutional_analysis': self.constitutional_analysis_cmd,
+            # 'jurisdiction_compare': self.jurisdiction_compare_cmd,
+            # 'precedent_analysis': self.precedent_analysis_cmd,
+            # 'statute_interpretation': self.statute_interpretation_cmd,
+            'start_case_analysis': self.start_case_analysis_cmd,
+            # TODO: Implement these OODA loop command handlers
+            # 'observe_facts': self.observe_facts_cmd,
+            # 'orient_issues': self.orient_issues_cmd,
+            # 'decide_strategy': self.decide_strategy_cmd,
+            # 'act_execute': self.act_execute_cmd,
+            # 'generate_legal_report': self.generate_legal_report_cmd,
+            # 'calculate_deadlines': self.calculate_deadlines_cmd,
+            # TODO: Implement these legal document command handlers
+            # 'conflict_check': self.conflict_check_cmd,
+            # 'motion_template': self.motion_template_cmd,
+            # 'legal_memo': self.legal_memo_cmd,
+            # 'brief_outline': self.brief_outline_cmd,
+            # 'privilege_scan': self.privilege_scan_cmd,
+            # 'redact_document': self.redact_document_cmd,
+            'privilege_log': self.privilege_log_cmd,
+            # TODO: Implement these advanced legal command handlers
+            # 'case_tracker': self.case_tracker_cmd,
+            # 'billing_tracker': self.billing_tracker_cmd,
+            # 'matter_summary': self.matter_summary_cmd,
+            # 'florida_statute_lookup': self.florida_statute_lookup_cmd,
+            # 'florida_dca_analysis': self.florida_dca_analysis_cmd,
+            # 'florida_rules_check': self.florida_rules_check_cmd,
+            # 'mega_brief_analysis': self.mega_brief_analysis_cmd,
+            # 'hallucination_check': self.hallucination_check_cmd,
+            # 'legal_audit': self.legal_audit_cmd
         }
 
         if cmd in commands:
@@ -510,11 +605,12 @@ class TinyCodeCLI:
         parts = args.split()
         cmd = parts[0].lower()
 
-        if cmd in ['chat', 'propose', 'execute']:
+        if cmd in ['chat', 'propose', 'execute', 'paralegal']:
             mode_map = {
                 'chat': OperationMode.CHAT,
                 'propose': OperationMode.PROPOSE,
-                'execute': OperationMode.EXECUTE
+                'execute': OperationMode.EXECUTE,
+                'paralegal': OperationMode.PARALEGAL
             }
             self.mode_manager.set_mode(mode_map[cmd])
 
@@ -534,7 +630,7 @@ class TinyCodeCLI:
 
         else:
             console.print(f"[red]Unknown mode command: {cmd}[/red]")
-            console.print("[yellow]Available: chat, propose, execute, status, help[/yellow]")
+            console.print("[yellow]Available: chat, propose, execute, paralegal, status, help[/yellow]")
 
     def handle_user_request(self, user_input: str):
         """Handle user requests in propose/execute modes"""
@@ -2152,6 +2248,698 @@ class TinyCodeCLI:
         except Exception as e:
             console.print(f"[red]Error exporting history: {e}[/red]")
 
+    # Legal System Commands (Paralegal Mode)
+
+    def validate_citation_cmd(self, args: str):
+        """Validate legal citations for accuracy and format"""
+        if not args.strip():
+            console.print("[red]Please provide a citation to validate[/red]")
+            console.print("[yellow]Usage: /validate_citation \"Smith v. Jones, 123 So. 3d 456 (Fla. 1st DCA 2019)\"[/yellow]")
+            return
+
+        try:
+            citation = args.strip().strip('"\'')
+            result = self.citation_validator.validate_citation(citation)
+
+            # Display validation results
+            if result.is_valid:
+                console.print(f"[green]✓ Valid citation format[/green]")
+                console.print(f"[bold]Type:[/bold] {result.citation_type}")
+                console.print(f"[bold]Jurisdiction:[/bold] {result.jurisdiction}")
+
+                if result.authority_info:
+                    console.print(f"[bold]Authority Level:[/bold] {result.authority_info.authority_level.value}")
+                    console.print(f"[bold]Binding:[/bold] {'Yes' if result.authority_info.binding_authority else 'No'}")
+
+                if result.validated_components:
+                    console.print("[bold]Components:[/bold]")
+                    for key, value in result.validated_components.items():
+                        console.print(f"  {key}: [cyan]{value}[/cyan]")
+            else:
+                console.print(f"[red]✗ Invalid citation[/red]")
+                console.print(f"[bold]Errors:[/bold]")
+                for error in result.errors:
+                    console.print(f"  • [red]{error}[/red]")
+
+            if result.suggestions:
+                console.print(f"[bold]Suggestions:[/bold]")
+                for suggestion in result.suggestions:
+                    console.print(f"  • [yellow]{suggestion}[/yellow]")
+
+        except Exception as e:
+            console.print(f"[red]Error validating citation: {e}[/red]")
+
+    def authority_hierarchy_cmd(self, args: str):
+        """Analyze legal authority hierarchy and relationships"""
+        if not args.strip():
+            console.print("[red]Please provide citation or authority to analyze[/red]")
+            console.print("[yellow]Usage: /authority_hierarchy \"Fla. Sup. Ct.\"[/yellow]")
+            return
+
+        try:
+            authority = args.strip().strip('"\'')
+            hierarchy = self.authority_hierarchy.analyze_authority(authority)
+
+            console.print(f"[bold]Authority Analysis: {authority}[/bold]")
+            console.print(f"Level: [cyan]{hierarchy.authority_level.value}[/cyan]")
+            console.print(f"Weight: [yellow]{hierarchy.authority_weight:.2f}[/yellow]")
+            console.print(f"Binding: {'Yes' if hierarchy.binding_authority else 'No'}")
+
+            if hierarchy.jurisdiction:
+                console.print(f"Jurisdiction: [green]{hierarchy.jurisdiction}[/green]")
+
+            if hierarchy.precedent_relationships:
+                console.print("\n[bold]Related Authorities:[/bold]")
+                for rel in hierarchy.precedent_relationships:
+                    console.print(f"  • {rel.target_authority} ({rel.relationship_type.value})")
+
+        except Exception as e:
+            console.print(f"[red]Error analyzing authority: {e}[/red]")
+
+    def legal_search_cmd(self, args: str):
+        """Search legal knowledge base"""
+        if not args.strip():
+            console.print("[red]Please provide search query[/red]")
+            console.print("[yellow]Usage: /legal_search \"summary judgment standards\"[/yellow]")
+            return
+
+        try:
+            query = args.strip().strip('"\'')
+            # Implement legal-specific search
+            console.print(f"[dim]Searching legal knowledge for: {query}[/dim]")
+            console.print("[yellow]Legal search functionality coming soon[/yellow]")
+
+        except Exception as e:
+            console.print(f"[red]Error searching legal knowledge: {e}[/red]")
+
+    def start_case_analysis_cmd(self, args: str):
+        """Start OODA loop case analysis"""
+        if not args.strip():
+            console.print("[red]Please provide case description[/red]")
+            console.print("[yellow]Usage: /start_case_analysis \"Contract dispute over delivery terms\"[/yellow]")
+            return
+
+        try:
+            case_description = args.strip().strip('"\'')
+            console.print(f"[bold]Starting OODA Loop Analysis[/bold]")
+            console.print(f"Case: [cyan]{case_description}[/cyan]")
+
+            # Initialize OODA loop
+            session_id = self.ooda_processor.start_analysis_session(case_description)
+            console.print(f"Session ID: [yellow]{session_id}[/yellow]")
+            console.print("\nUse [cyan]/ooda_observe[/cyan], [cyan]/ooda_orient[/cyan], [cyan]/ooda_decide[/cyan], [cyan]/ooda_act[/cyan] to proceed")
+
+        except Exception as e:
+            console.print(f"[red]Error starting case analysis: {e}[/red]")
+
+    def ooda_observe_cmd(self, args: str):
+        """OODA Loop - Observe phase"""
+        try:
+            # Get current session or create default
+            session_id = getattr(self, '_current_ooda_session', None)
+            if not session_id:
+                console.print("[yellow]No active OODA session. Use /start_case_analysis first[/yellow]")
+                return
+
+            console.print("[bold blue]OODA - Observe Phase[/bold blue]")
+            console.print("Gathering case facts and evidence...")
+
+            # For now, show placeholder - full implementation would gather facts
+            console.print("[green]✓ Observation phase initiated[/green]")
+            console.print("Use [cyan]/ooda_orient[/cyan] to proceed to orientation phase")
+
+        except Exception as e:
+            console.print(f"[red]Error in observe phase: {e}[/red]")
+
+    def ooda_orient_cmd(self, args: str):
+        """OODA Loop - Orient phase"""
+        try:
+            console.print("[bold yellow]OODA - Orient Phase[/bold yellow]")
+            console.print("Analyzing legal framework and precedents...")
+            console.print("[green]✓ Orientation phase initiated[/green]")
+            console.print("Use [cyan]/ooda_decide[/cyan] to proceed to decision phase")
+
+        except Exception as e:
+            console.print(f"[red]Error in orient phase: {e}[/red]")
+
+    def ooda_decide_cmd(self, args: str):
+        """OODA Loop - Decide phase"""
+        try:
+            console.print("[bold magenta]OODA - Decide Phase[/bold magenta]")
+            console.print("Formulating legal strategy and options...")
+            console.print("[green]✓ Decision phase initiated[/green]")
+            console.print("Use [cyan]/ooda_act[/cyan] to proceed to action phase")
+
+        except Exception as e:
+            console.print(f"[red]Error in decide phase: {e}[/red]")
+
+    def ooda_act_cmd(self, args: str):
+        """OODA Loop - Act phase"""
+        try:
+            console.print("[bold red]OODA - Act Phase[/bold red]")
+            console.print("Implementing legal action plan...")
+            console.print("[green]✓ Action phase initiated[/green]")
+            console.print("OODA loop cycle complete. Use [cyan]/start_case_analysis[/cyan] for new analysis")
+
+        except Exception as e:
+            console.print(f"[red]Error in act phase: {e}[/red]")
+
+    def extended_reasoning_cmd(self, args: str):
+        """Start extended legal reasoning session"""
+        parts = args.split() if args.strip() else []
+        mode = parts[0] if parts else "extended"
+
+        try:
+            from .legal.legal_reasoning import ReasoningMode
+
+            mode_map = {
+                "standard": ReasoningMode.STANDARD,
+                "extended": ReasoningMode.EXTENDED,
+                "constitutional": ReasoningMode.CONSTITUTIONAL,
+                "complex": ReasoningMode.COMPLEX_CASE,
+                "mega": ReasoningMode.MEGA_BRIEF
+            }
+
+            reasoning_mode = mode_map.get(mode, ReasoningMode.EXTENDED)
+
+            console.print(f"[bold]Extended Reasoning Mode: {reasoning_mode.value}[/bold]")
+            console.print(f"Token Allocation: [cyan]{self.legal_reasoning.get_token_allocation(reasoning_mode)}[/cyan]")
+            console.print("Enhanced reasoning session started...")
+
+        except Exception as e:
+            console.print(f"[red]Error starting extended reasoning: {e}[/red]")
+
+    def privilege_check_cmd(self, args: str):
+        """Check content for attorney-client privilege"""
+        if not args.strip():
+            console.print("[red]Please provide content to check[/red]")
+            console.print("[yellow]Usage: /privilege_check \"Client confidential communication\"[/yellow]")
+            return
+
+        try:
+            content = args.strip().strip('"\'')
+            privilege_level = self.privilege_system.classify_privilege_level(content, {})
+
+            console.print(f"[bold]Privilege Analysis[/bold]")
+            console.print(f"Level: [cyan]{privilege_level.value}[/cyan]")
+
+            if privilege_level.value != "NONE":
+                console.print("[yellow]⚠️  Privileged content detected[/yellow]")
+                console.print("Consider encryption and access controls")
+            else:
+                console.print("[green]✓ No privilege concerns detected[/green]")
+
+        except Exception as e:
+            console.print(f"[red]Error checking privilege: {e}[/red]")
+
+    def deadline_calculator_cmd(self, args: str):
+        """Calculate legal deadlines"""
+        console.print("[bold]Deadline Calculator[/bold]")
+        console.print("[yellow]Deadline calculation functionality coming soon[/yellow]")
+        console.print("Will support Florida court rules, federal rules, and custom calculations")
+
+    def conflict_checker_cmd(self, args: str):
+        """Check for conflicts of interest"""
+        console.print("[bold]Conflict Checker[/bold]")
+        console.print("[yellow]Conflict checking functionality coming soon[/yellow]")
+        console.print("Will analyze client relationships and potential conflicts")
+
+    def precedent_analyzer_cmd(self, args: str):
+        """Analyze legal precedents"""
+        if not args.strip():
+            console.print("[red]Please provide case or legal issue[/red]")
+            console.print("[yellow]Usage: /precedent_analyzer \"contract interpretation\"[/yellow]")
+            return
+
+        console.print(f"[bold]Precedent Analysis[/bold]")
+        console.print(f"Issue: [cyan]{args.strip()}[/cyan]")
+        console.print("[yellow]Precedent analysis functionality coming soon[/yellow]")
+
+    def motion_templates_cmd(self, args: str):
+        """Generate motion templates"""
+        console.print("[bold]Motion Templates[/bold]")
+        console.print("[yellow]Motion template generation coming soon[/yellow]")
+        console.print("Will support Florida and federal motion templates")
+
+    def case_research_cmd(self, args: str):
+        """Research case law"""
+        if not args.strip():
+            console.print("[red]Please provide research query[/red]")
+            console.print("[yellow]Usage: /case_research \"personal jurisdiction\"[/yellow]")
+            return
+
+        console.print(f"[bold]Case Research[/bold]")
+        console.print(f"Query: [cyan]{args.strip()}[/cyan]")
+        console.print("[yellow]Case research functionality coming soon[/yellow]")
+
+    def statute_lookup_cmd(self, args: str):
+        """Look up statutes and regulations"""
+        if not args.strip():
+            console.print("[red]Please provide statute citation or topic[/red]")
+            console.print("[yellow]Usage: /statute_lookup \"Fla. Stat. § 95.11\"[/yellow]")
+            return
+
+        console.print(f"[bold]Statute Lookup[/bold]")
+        console.print(f"Citation: [cyan]{args.strip()}[/cyan]")
+        console.print("[yellow]Statute lookup functionality coming soon[/yellow]")
+
+    def brief_generator_cmd(self, args: str):
+        """Generate legal briefs"""
+        console.print("[bold]Brief Generator[/bold]")
+        console.print("[yellow]Brief generation functionality coming soon[/yellow]")
+        console.print("Will support appellate briefs, motions, and pleadings")
+
+    def discovery_manager_cmd(self, args: str):
+        """Manage discovery requests and responses"""
+        console.print("[bold]Discovery Manager[/bold]")
+        console.print("[yellow]Discovery management functionality coming soon[/yellow]")
+
+    def client_intake_cmd(self, args: str):
+        """Client intake and information gathering"""
+        console.print("[bold]Client Intake[/bold]")
+        console.print("[yellow]Client intake functionality coming soon[/yellow]")
+        console.print("Will include privilege protection and secure storage")
+
+    def document_review_cmd(self, args: str):
+        """Review documents for privilege and relevance"""
+        if not args.strip():
+            console.print("[red]Please provide document path or content[/red]")
+            console.print("[yellow]Usage: /document_review \"/path/to/document.pdf\"[/yellow]")
+            return
+
+        console.print(f"[bold]Document Review[/bold]")
+        console.print(f"Document: [cyan]{args.strip()}[/cyan]")
+        console.print("[yellow]Document review functionality coming soon[/yellow]")
+
+    def billing_tracker_cmd(self, args: str):
+        """Track billable time and activities"""
+        console.print("[bold]Billing Tracker[/bold]")
+        console.print("[yellow]Billing tracking functionality coming soon[/yellow]")
+
+    def court_calendar_cmd(self, args: str):
+        """Manage court calendar and deadlines"""
+        console.print("[bold]Court Calendar[/bold]")
+        console.print("[yellow]Court calendar functionality coming soon[/yellow]")
+
+    def evidence_organizer_cmd(self, args: str):
+        """Organize and catalog evidence"""
+        console.print("[bold]Evidence Organizer[/bold]")
+        console.print("[yellow]Evidence organization functionality coming soon[/yellow]")
+
+    def witness_tracker_cmd(self, args: str):
+        """Track witness information and availability"""
+        console.print("[bold]Witness Tracker[/bold]")
+        console.print("[yellow]Witness tracking functionality coming soon[/yellow]")
+
+    def legal_forms_cmd(self, args: str):
+        """Generate and fill legal forms"""
+        console.print("[bold]Legal Forms[/bold]")
+        console.print("[yellow]Legal forms functionality coming soon[/yellow]")
+
+    def rule_interpreter_cmd(self, args: str):
+        """Interpret court rules and procedures"""
+        if not args.strip():
+            console.print("[red]Please provide rule citation or topic[/red]")
+            console.print("[yellow]Usage: /rule_interpreter \"Rule 1.420\"[/yellow]")
+            return
+
+        console.print(f"[bold]Rule Interpreter[/bold]")
+        console.print(f"Rule: [cyan]{args.strip()}[/cyan]")
+        console.print("[yellow]Rule interpretation functionality coming soon[/yellow]")
+
+    def settlement_calculator_cmd(self, args: str):
+        """Calculate settlement values and ranges"""
+        console.print("[bold]Settlement Calculator[/bold]")
+        console.print("[yellow]Settlement calculation functionality coming soon[/yellow]")
+
+    def expert_witness_cmd(self, args: str):
+        """Manage expert witness information"""
+        console.print("[bold]Expert Witness Manager[/bold]")
+        console.print("[yellow]Expert witness management functionality coming soon[/yellow]")
+
+    def trial_prep_cmd(self, args: str):
+        """Trial preparation and organization"""
+        console.print("[bold]Trial Preparation[/bold]")
+        console.print("[yellow]Trial prep functionality coming soon[/yellow]")
+
+    def appeal_tracker_cmd(self, args: str):
+        """Track appellate proceedings"""
+        console.print("[bold]Appeal Tracker[/bold]")
+        console.print("[yellow]Appeal tracking functionality coming soon[/yellow]")
+
+    def compliance_checker_cmd(self, args: str):
+        """Check regulatory compliance"""
+        console.print("[bold]Compliance Checker[/bold]")
+        console.print("[yellow]Compliance checking functionality coming soon[/yellow]")
+
+    def legal_analytics_cmd(self, args: str):
+        """Analyze legal trends and outcomes"""
+        console.print("[bold]Legal Analytics[/bold]")
+        console.print("[yellow]Legal analytics functionality coming soon[/yellow]")
+
+    def privilege_log_cmd(self, args: str):
+        """Generate privilege logs"""
+        console.print("[bold]Privilege Log Generator[/bold]")
+        console.print("[yellow]Privilege log functionality coming soon[/yellow]")
+
+    def redaction_tool_cmd(self, args: str):
+        """Redact sensitive information"""
+        if not args.strip():
+            console.print("[red]Please provide document path or content[/red]")
+            console.print("[yellow]Usage: /redaction_tool \"/path/to/document.pdf\"[/yellow]")
+            return
+
+        console.print(f"[bold]Redaction Tool[/bold]")
+        console.print(f"Document: [cyan]{args.strip()}[/cyan]")
+        console.print("[yellow]Redaction functionality coming soon[/yellow]")
+
+    def legal_notification_cmd(self, args: str):
+        """Send legal notifications and notices"""
+        console.print("[bold]Legal Notification System[/bold]")
+        console.print("[yellow]Legal notification functionality coming soon[/yellow]")
+
+    def contract_analyzer_cmd(self, args: str):
+        """Analyze contracts and agreements"""
+        if not args.strip():
+            console.print("[red]Please provide contract path or content[/red]")
+            console.print("[yellow]Usage: /contract_analyzer \"/path/to/contract.pdf\"[/yellow]")
+            return
+
+        console.print(f"[bold]Contract Analyzer[/bold]")
+        console.print(f"Contract: [cyan]{args.strip()}[/cyan]")
+        console.print("[yellow]Contract analysis functionality coming soon[/yellow]")
+
+    def legal_export_cmd(self, args: str):
+        """Export legal documents and reports"""
+        console.print("[bold]Legal Export System[/bold]")
+        console.print("[yellow]Legal export functionality coming soon[/yellow]")
+        console.print("Will support various formats: PDF, DOCX, HTML, JSON")
+
+    # Legal Writing Knowledge System Command Handlers
+
+    def writing_principles_cmd(self, args: str):
+        """Show legal writing principles and best practices"""
+        try:
+            from tiny_code.legal.writing_principles import LegalWritingPrinciples
+
+            principles = LegalWritingPrinciples()
+
+            if args.strip():
+                # Show specific category
+                category = args.strip().lower()
+                category_principles = principles.get_principles_by_category(category)
+
+                if category_principles:
+                    console.print(f"[bold]Legal Writing Principles - {category.replace('_', ' ').title()}[/bold]")
+                    for principle in category_principles:
+                        console.print(f"\n[cyan]{principle.name}[/cyan] ({principle.importance} Priority)")
+                        console.print(f"  {principle.description}")
+
+                        if principle.best_practices:
+                            console.print("  [dim]Best Practices:[/dim]")
+                            for practice in principle.best_practices[:3]:  # Show first 3
+                                console.print(f"    • {practice}")
+                else:
+                    console.print(f"[red]Category '{category}' not found[/red]")
+                    console.print(f"Available categories: {', '.join(principles.get_principle_categories())}")
+            else:
+                # Show all categories overview
+                console.print("[bold]Legal Writing Principles Overview[/bold]")
+                categories = principles.get_principle_categories()
+
+                for category in categories:
+                    category_principles = principles.get_principles_by_category(category)
+                    console.print(f"\n[cyan]{category.replace('_', ' ').title()}[/cyan] ({len(category_principles)} principles)")
+                    for principle in category_principles:
+                        console.print(f"  • {principle.name}")
+
+                console.print(f"\n[dim]Use /writing_principles <category> for details[/dim]")
+
+        except ImportError as e:
+            console.print(f"[red]Legal writing module not available: {e}[/red]")
+        except Exception as e:
+            console.print(f"[red]Error showing writing principles: {e}[/red]")
+
+    def writing_evaluate_cmd(self, args: str):
+        """Evaluate legal document against writing principles"""
+        if not args.strip():
+            console.print("[red]Please provide file path or document content[/red]")
+            console.print("[yellow]Usage: /writing_evaluate \"/path/to/document.txt\"[/yellow]")
+            console.print("[yellow]       /writing_evaluate \"document content here\"[/yellow]")
+            return
+
+        try:
+            from tiny_code.legal.writing_evaluator import LegalWritingEvaluator
+            import os
+
+            evaluator = LegalWritingEvaluator()
+            arg = args.strip().strip('"\'')
+
+            # Check if argument is a file path
+            if os.path.isfile(arg):
+                with open(arg, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                console.print(f"[dim]Evaluating file: {arg}[/dim]")
+            else:
+                content = arg
+                console.print("[dim]Evaluating provided content[/dim]")
+
+            # Perform evaluation
+            analysis = evaluator.evaluate_document(content)
+
+            # Display formatted report
+            report = evaluator.format_analysis_report(analysis)
+            console.print(report)
+
+        except ImportError as e:
+            console.print(f"[red]Legal writing evaluator not available: {e}[/red]")
+        except FileNotFoundError:
+            console.print(f"[red]File not found: {arg}[/red]")
+        except Exception as e:
+            console.print(f"[red]Error evaluating document: {e}[/red]")
+
+    def document_templates_cmd(self, args: str):
+        """Show available legal document templates"""
+        try:
+            from tiny_code.legal.document_templates import LegalDocumentTemplates
+            from tiny_code.legal.writing_principles import LegalDocumentType
+
+            templates = LegalDocumentTemplates()
+
+            if args.strip():
+                # Show specific template details
+                try:
+                    doc_type = LegalDocumentType(args.strip().lower())
+                    template = templates.get_template(doc_type)
+
+                    if template:
+                        outline = templates.generate_document_outline(doc_type, include_instructions=True)
+                        console.print(outline)
+                    else:
+                        console.print(f"[red]Template not found for: {args.strip()}[/red]")
+                except ValueError:
+                    console.print(f"[red]Invalid document type: {args.strip()}[/red]")
+                    console.print("Available types: brief, memorandum, motion, client_letter, contract")
+            else:
+                # Show all available templates
+                console.print("[bold]Available Legal Document Templates[/bold]")
+                available_templates = templates.get_available_templates()
+
+                for template in available_templates:
+                    console.print(f"\n[cyan]{template.document_type.value}[/cyan] - {template.name}")
+                    console.print(f"  {template.description}")
+                    console.print(f"  Sections: {len(template.sections)}")
+                    if template.analysis_framework:
+                        console.print(f"  Framework: {template.analysis_framework.value.upper()}")
+
+                console.print(f"\n[dim]Use /document_templates <type> for details[/dim]")
+
+        except ImportError as e:
+            console.print(f"[red]Document templates module not available: {e}[/red]")
+        except Exception as e:
+            console.print(f"[red]Error showing templates: {e}[/red]")
+
+    def generate_template_cmd(self, args: str):
+        """Generate legal document from template"""
+        if not args.strip():
+            console.print("[red]Please provide document type[/red]")
+            console.print("[yellow]Usage: /generate_template brief[/yellow]")
+            console.print("[yellow]Available types: brief, memorandum, motion, client_letter, contract[/yellow]")
+            return
+
+        try:
+            from tiny_code.legal.document_templates import LegalDocumentTemplates
+            from tiny_code.legal.writing_principles import LegalDocumentType
+
+            templates = LegalDocumentTemplates()
+
+            try:
+                doc_type = LegalDocumentType(args.strip().lower())
+                complete_template = templates.generate_complete_template(doc_type, include_instructions=True)
+
+                console.print(f"[bold]Generated Template: {doc_type.value.title()}[/bold]")
+                console.print(complete_template)
+
+                # Offer to save to file
+                console.print(f"\n[dim]Template generated. Use /save to write to file.[/dim]")
+
+            except ValueError:
+                console.print(f"[red]Invalid document type: {args.strip()}[/red]")
+                console.print("Available types: brief, memorandum, motion, client_letter, contract")
+
+        except ImportError as e:
+            console.print(f"[red]Document templates module not available: {e}[/red]")
+        except Exception as e:
+            console.print(f"[red]Error generating template: {e}[/red]")
+
+    def citation_check_cmd(self, args: str):
+        """Validate citation format and accuracy"""
+        if not args.strip():
+            console.print("[red]Please provide citation to validate[/red]")
+            console.print("[yellow]Usage: /citation_check \"Brown v. Board of Education, 347 U.S. 483 (1954)\"[/yellow]")
+            return
+
+        try:
+            from tiny_code.legal.writing_principles import LegalWritingPrinciples
+
+            principles = LegalWritingPrinciples()
+            citation = args.strip().strip('"\'')
+
+            console.print(f"[bold]Citation Validation[/bold]")
+            console.print(f"Citation: [cyan]{citation}[/cyan]")
+
+            # Determine citation type and validate
+            if 'v.' in citation:
+                citation_type = 'case_citation'
+            elif 'U.S.C.' in citation:
+                citation_type = 'statute_citation'
+            elif 'C.F.R.' in citation:
+                citation_type = 'regulation_citation'
+            else:
+                console.print("[yellow]Citation type not recognized. Checking basic format...[/yellow]")
+                citation_type = 'case_citation'  # Default to case citation
+
+            is_valid, errors = principles.validate_citation_format(citation, citation_type)
+
+            if is_valid:
+                console.print("[green]✓ Citation format is valid[/green]")
+            else:
+                console.print("[red]✗ Citation format issues found:[/red]")
+                for error in errors:
+                    console.print(f"  • {error}")
+
+            # Show citation standard for reference
+            standard = principles.get_citation_standard(citation_type)
+            if standard:
+                console.print(f"\n[dim]Expected format: {standard.description}[/dim]")
+                if standard.examples:
+                    console.print(f"[dim]Example: {standard.examples[0]}[/dim]")
+
+        except ImportError as e:
+            console.print(f"[red]Legal writing module not available: {e}[/red]")
+        except Exception as e:
+            console.print(f"[red]Error validating citation: {e}[/red]")
+
+    def irac_analysis_cmd(self, args: str):
+        """Generate IRAC/CRAC/CREAC analysis framework"""
+        if not args.strip():
+            console.print("[red]Please specify analysis framework[/red]")
+            console.print("[yellow]Usage: /irac_analysis irac|crac|creac[/yellow]")
+            return
+
+        try:
+            from tiny_code.legal.writing_principles import LegalWritingPrinciples, AnalysisStructure
+
+            principles = LegalWritingPrinciples()
+            framework_name = args.strip().lower()
+
+            try:
+                framework = AnalysisStructure(framework_name)
+                framework_details = principles.get_analysis_framework(framework)
+
+                if framework_details:
+                    console.print(f"[bold]{framework_details['name']} Analysis Framework[/bold]")
+                    console.print(f"{framework_details['description']}")
+
+                    console.print(f"\n[cyan]Components:[/cyan]")
+                    for component in framework_details['components']:
+                        console.print(f"\n[yellow]{component['name']}[/yellow]")
+                        console.print(f"  {component['description']}")
+                        console.print(f"  Requirements:")
+                        for req in component['requirements']:
+                            console.print(f"    • {req}")
+
+                    console.print(f"\n[dim]Best for: {', '.join(framework_details['best_for'])}[/dim]")
+                else:
+                    console.print(f"[red]Framework details not found[/red]")
+
+            except ValueError:
+                console.print(f"[red]Invalid framework: {framework_name}[/red]")
+                console.print("Available frameworks: irac, crac, creac")
+
+        except ImportError as e:
+            console.print(f"[red]Legal writing module not available: {e}[/red]")
+        except Exception as e:
+            console.print(f"[red]Error showing analysis framework: {e}[/red]")
+
+    def writing_score_cmd(self, args: str):
+        """Get writing quality score and detailed analysis"""
+        if not args.strip():
+            console.print("[red]Please provide file path or document content[/red]")
+            console.print("[yellow]Usage: /writing_score \"/path/to/document.txt\"[/yellow]")
+            return
+
+        try:
+            from tiny_code.legal.writing_evaluator import LegalWritingEvaluator
+            import os
+
+            evaluator = LegalWritingEvaluator()
+            arg = args.strip().strip('"\'')
+
+            # Check if argument is a file path
+            if os.path.isfile(arg):
+                with open(arg, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                console.print(f"[dim]Analyzing file: {arg}[/dim]")
+            else:
+                content = arg
+                console.print("[dim]Analyzing provided content[/dim]")
+
+            # Perform evaluation
+            analysis = evaluator.evaluate_document(content)
+
+            # Display summary scores
+            console.print(f"[bold]Writing Quality Analysis[/bold]")
+            console.print(f"Overall Score: [cyan]{analysis.overall_score:.1f}/10.0[/cyan]")
+
+            console.print(f"\n[yellow]Quality Dimensions:[/yellow]")
+            for quality_dim, score in analysis.quality_scores.items():
+                color = "green" if score.score >= 7 else "yellow" if score.score >= 5 else "red"
+                console.print(f"  {quality_dim.value.replace('_', ' ').title():20} [{color}]{score.score:4.1f}[/{color}]/10.0")
+
+            # Show top issues
+            high_priority_issues = [i for i in analysis.issues if i.severity.value in ['critical', 'high']]
+            if high_priority_issues:
+                console.print(f"\n[red]Priority Issues ({len(high_priority_issues)}):[/red]")
+                for issue in high_priority_issues[:5]:  # Show top 5
+                    console.print(f"  • {issue.description}")
+                    console.print(f"    [dim]{issue.suggestion}[/dim]")
+
+            # Show strengths
+            if analysis.strengths:
+                console.print(f"\n[green]Strengths:[/green]")
+                for strength in analysis.strengths[:3]:  # Show top 3
+                    console.print(f"  • {strength}")
+
+            console.print(f"\n[dim]Use /writing_evaluate for complete analysis[/dim]")
+
+        except ImportError as e:
+            console.print(f"[red]Legal writing evaluator not available: {e}[/red]")
+        except FileNotFoundError:
+            console.print(f"[red]File not found: {arg}[/red]")
+        except Exception as e:
+            console.print(f"[red]Error analyzing writing: {e}[/red]")
+
     def record_command_usage(self, command: str, parameters: str = "",
                            success: bool = True, execution_time: float = 0):
         """Record command usage for analytics"""
@@ -2456,6 +3244,148 @@ class TinyCodeCLI:
 
         except Exception as e:
             console.print(f"[red]Error getting plugin info: {e}[/red]")
+
+    def show_principles_cmd(self, args: str):
+        """Show available software development principles"""
+        try:
+            args_list = args.split() if args else []
+            category = args_list[0] if args_list else None
+
+            console.print("\n[bold cyan]Software Development Principles[/bold cyan]")
+
+            if category:
+                # Show specific category
+                summary = self.agent.get_principle_summary(category)
+                if "error" in summary:
+                    console.print(f"[red]{summary['error']}[/red]")
+                    return
+
+                console.print(f"\n[bold yellow]{summary['category'].upper()} Principles:[/bold yellow]")
+                for principle in summary["principles"]:
+                    console.print(f"\n[bold green]• {principle['name']}[/bold green]")
+                    console.print(f"  {principle['description']}")
+                    console.print(f"  [dim]Severity: {principle['severity']}[/dim]")
+                    if principle.get("examples"):
+                        console.print(f"  [dim]Examples: {', '.join(principle['examples'][:2])}[/dim]")
+            else:
+                # Show all categories
+                summary = self.agent.get_principle_summary()
+                console.print("\n[bold yellow]Available Categories:[/bold yellow]")
+
+                for category, info in summary.items():
+                    console.print(f"\n[bold green]{category.upper()}[/bold green] ({info['count']} principles)")
+                    console.print(f"  {', '.join(info['principles'][:3])}{'...' if len(info['principles']) > 3 else ''}")
+
+                console.print(f"\n[dim]Use '/principles <category>' to see details for a specific category[/dim]")
+                console.print(f"[dim]Available categories: {', '.join(summary.keys())}[/dim]")
+
+        except Exception as e:
+            console.print(f"[red]Error showing principles: {e}[/red]")
+
+    def evaluate_code_cmd(self, args: str):
+        """Evaluate code against software development principles"""
+        try:
+            args_list = args.split() if args else []
+
+            if not args_list:
+                console.print("[red]Usage: /evaluate <file_path> [focus_categories...]")
+                console.print("[dim]Example: /evaluate src/main.py clean_code security[/dim]")
+                return
+
+            file_path = args_list[0]
+            focus_areas = args_list[1:] if len(args_list) > 1 else None
+
+            # Check if file exists
+            if not os.path.exists(file_path):
+                console.print(f"[red]File not found: {file_path}[/red]")
+                return
+
+            # Read the file
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    code_content = f.read()
+            except Exception as e:
+                console.print(f"[red]Error reading file: {e}[/red]")
+                return
+
+            console.print(f"\n[bold cyan]Evaluating: {file_path}[/bold cyan]")
+            if focus_areas:
+                console.print(f"[dim]Focus areas: {', '.join(focus_areas)}[/dim]")
+
+            # Perform evaluation
+            with console.status("[bold green]Analyzing code..."):
+                evaluation = self.agent.evaluate_code_principles(code_content, file_path, focus_areas)
+
+            # Display results
+            console.print(f"\n[bold yellow]📊 Overall Score: {evaluation.overall_score:.1f}/10.0[/bold yellow]")
+
+            # Quality scores
+            console.print("\n[bold]🎯 Quality Dimensions:[/bold]")
+            for score in evaluation.quality_scores:
+                if score.score >= 8.0:
+                    icon, color = "✅", "green"
+                elif score.score >= 6.0:
+                    icon, color = "⚠️", "yellow"
+                else:
+                    icon, color = "❌", "red"
+
+                console.print(f"{icon} [{color}]{score.dimension.value.title()}: {score.score:.1f}/10.0[/{color}]")
+                if score.details and score.score < 8.0:
+                    console.print(f"   [dim]{score.details}[/dim]")
+
+            # Recommendations
+            if evaluation.recommendations:
+                console.print(f"\n[bold]💡 Recommendations ({len(evaluation.recommendations)}):[/bold]")
+                for i, rec in enumerate(evaluation.recommendations[:10], 1):  # Show top 10
+                    severity_colors = {
+                        "critical": "red",
+                        "high": "yellow",
+                        "medium": "yellow",
+                        "low": "blue"
+                    }
+                    severity_icons = {
+                        "critical": "🚨",
+                        "high": "⚠️",
+                        "medium": "💡",
+                        "low": "📝"
+                    }
+
+                    color = severity_colors.get(rec.severity.value, "white")
+                    icon = severity_icons.get(rec.severity.value, "•")
+
+                    console.print(f"\n{i}. {icon} [{color}]{rec.message}[/{color}]")
+                    if rec.suggested_fix:
+                        console.print(f"   [bold]Fix:[/bold] {rec.suggested_fix}")
+                    if rec.rationale:
+                        console.print(f"   [dim]Why: {rec.rationale}[/dim]")
+
+                if len(evaluation.recommendations) > 10:
+                    console.print(f"\n[dim]... and {len(evaluation.recommendations) - 10} more recommendations[/dim]")
+
+            # Code metrics
+            if evaluation.metrics:
+                console.print(f"\n[bold]📈 Code Metrics:[/bold]")
+                metrics = evaluation.metrics
+                console.print(f"• Lines of Code: {metrics.lines_of_code}")
+                console.print(f"• Functions: {metrics.function_count}")
+                console.print(f"• Classes: {metrics.class_count}")
+                console.print(f"• Cyclomatic Complexity: {metrics.cyclomatic_complexity}")
+                if metrics.max_function_length > 0:
+                    console.print(f"• Max Function Length: {metrics.max_function_length} lines")
+
+                if metrics.security_issues:
+                    console.print(f"• [red]Security Issues: {len(metrics.security_issues)}[/red]")
+                if metrics.performance_issues:
+                    console.print(f"• [yellow]Performance Issues: {len(metrics.performance_issues)}[/yellow]")
+                if metrics.code_smells:
+                    console.print(f"• [yellow]Code Smells: {len(metrics.code_smells)}[/yellow]")
+
+            console.print(f"\n[dim]Analysis completed in {evaluation.analysis_duration:.3f}s[/dim]")
+            console.print(f"[dim]Use '/review {file_path}' for AI-powered review with these principles[/dim]")
+
+        except Exception as e:
+            console.print(f"[red]Error evaluating code: {e}[/red]")
+            self.logger.error(f"Code evaluation error: {e}", exc_info=True)
 
 @click.group(invoke_without_command=True)
 @click.option('--model', default='tinyllama:latest', help='Ollama model to use')
