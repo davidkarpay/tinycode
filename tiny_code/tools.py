@@ -1,4 +1,4 @@
-"""Code manipulation and analysis tools"""
+"""Code manipulation and analysis tools with sandboxing support"""
 
 import os
 import ast
@@ -18,6 +18,8 @@ from rich.console import Console
 from rich.syntax import Syntax
 from rich.table import Table
 from rich.tree import Tree
+
+from .sandbox import PathValidator, SandboxConfig, SecurityError, create_default_sandbox
 
 console = Console()
 
@@ -185,7 +187,8 @@ class AdvancedFileOperations:
                         base_path: str = ".",
                         case_sensitive: bool = False,
                         regex: bool = False,
-                        dry_run: bool = True) -> List[EditOperation]:
+                        dry_run: bool = True,
+                        working_directory: Optional[str] = None) -> List[EditOperation]:
         """Replace pattern in multiple files"""
         try:
             operations = []
@@ -391,31 +394,115 @@ class AdvancedFileOperations:
             return {'error': str(e)}
 
 class CodeTools:
-    """Tools for code manipulation and analysis"""
+    """Tools for code manipulation and analysis with sandbox support"""
 
-    @staticmethod
-    def read_file(filepath: str) -> str:
-        """Read a file and return its contents"""
+    def __init__(self, working_directory: Optional[str] = None):
+        """Initialize CodeTools with optional sandbox"""
+        self.working_directory = working_directory or os.getcwd()
+        self.validator = create_default_sandbox(self.working_directory)
+
+    def _validate_and_get_safe_path(self, filepath: str, operation: str = "access") -> Tuple[str, Optional[str]]:
+        """Validate path and return safe path or error message"""
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                return f.read()
+            violation = self.validator.validate_path(filepath, operation)
+            if violation:
+                error_msg = (
+                    f"Security Error: {violation.message}. "
+                    f"Available files: {', '.join(self.validator.list_accessible_files()[:10])}"
+                    f"{'...' if len(self.validator.list_accessible_files()) > 10 else ''}"
+                )
+                return "", error_msg
+
+            safe_path = self.validator.get_safe_path(filepath)
+            return str(safe_path), None
+        except Exception as e:
+            return "", f"Path validation error: {e}"
+
+    def read_file(self, filepath: str) -> str:
+        """Read a file and return its contents with sandbox validation"""
+        safe_path, error = self._validate_and_get_safe_path(filepath, "read")
+        if error:
+            console.print(f"[red]{error}[/red]")
+            return ""
+
+        try:
+            with open(safe_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            console.print(f"[green]Successfully read {len(content)} characters from {filepath}[/green]")
+            return content
+        except FileNotFoundError:
+            available_files = self.validator.list_accessible_files()
+            suggestion = f"Available files: {', '.join(available_files[:5])}" if available_files else "No accessible files found"
+            error_msg = f"File not found: {filepath}. {suggestion}"
+            console.print(f"[red]{error_msg}[/red]")
+            return ""
+        except PermissionError:
+            console.print(f"[red]Permission denied: {filepath}. File may be read-only or outside working directory.[/red]")
+            return ""
         except Exception as e:
             console.print(f"[red]Error reading file {filepath}: {e}[/red]")
             return ""
 
-    @staticmethod
-    def write_file(filepath: str, content: str) -> bool:
-        """Write content to a file"""
+    def write_file(self, filepath: str, content: str, working_directory: Optional[str] = None) -> bool:
+        """Write content to a file with sandbox validation"""
+        # Use provided working directory or instance default
+        if working_directory and working_directory != self.working_directory:
+            temp_validator = create_default_sandbox(working_directory)
+            violation = temp_validator.validate_path(filepath, "write")
+            if violation:
+                console.print(f"[red]Security Error: {violation.message}[/red]")
+                return False
+            safe_path = str(temp_validator.get_safe_path(filepath))
+        else:
+            safe_path, error = self._validate_and_get_safe_path(filepath, "write")
+            if error:
+                console.print(f"[red]{error}[/red]")
+                return False
+
         try:
-            path = Path(filepath)
+            path = Path(safe_path)
             path.parent.mkdir(parents=True, exist_ok=True)
-            with open(filepath, 'w', encoding='utf-8') as f:
+
+            # Check content size before writing
+            content_size_mb = len(content.encode('utf-8')) / (1024 * 1024)
+            if content_size_mb > 10:  # 10MB limit
+                console.print(f"[red]Content size ({content_size_mb:.1f}MB) exceeds 10MB limit. Consider breaking into smaller files.[/red]")
+                return False
+
+            with open(safe_path, 'w', encoding='utf-8') as f:
                 f.write(content)
-            console.print(f"[green]Successfully wrote to {filepath}[/green]")
+            console.print(f"[green]Successfully wrote {len(content)} characters to {filepath}[/green]")
             return True
+        except PermissionError:
+            console.print(f"[red]Permission denied writing to {filepath}. Check file permissions and working directory access.[/red]")
+            return False
+        except OSError as e:
+            if "No space left on device" in str(e):
+                console.print(f"[red]Disk full: Cannot write to {filepath}. Free up space and try again.[/red]")
+            else:
+                console.print(f"[red]OS error writing to {filepath}: {e}[/red]")
+            return False
         except Exception as e:
             console.print(f"[red]Error writing to {filepath}: {e}[/red]")
             return False
+
+    def read_file_safe(self, filepath: str, working_directory: str) -> str:
+        """Read file with explicit working directory (standalone function)"""
+        validator = create_default_sandbox(working_directory)
+        violation = validator.validate_path(filepath, "read")
+        if violation:
+            return f"Error: {violation.message}. Available files: {', '.join(validator.list_accessible_files()[:10])}"
+
+        try:
+            safe_path = validator.get_safe_path(filepath)
+            with open(safe_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except FileNotFoundError:
+            available_files = validator.list_accessible_files()
+            suggestion = f"Available files: {', '.join(available_files[:5])}" if available_files else "No accessible files found"
+            return f"Error: File not found: {filepath}. {suggestion}"
+        except Exception as e:
+            return f"Error reading file {filepath}: {e}"
 
     @staticmethod
     def display_code(code: str, language: str = "python") -> None:
