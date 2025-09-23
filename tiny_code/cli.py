@@ -31,8 +31,8 @@ console = Console()
 class TinyCodeCLI:
     """Command-line interface for Tiny Code"""
 
-    def __init__(self):
-        self.agent = TinyCodeAgent()
+    def __init__(self, model: str = "tinyllama:latest"):
+        self.agent = TinyCodeAgent(model=model)
         self.tools = CodeTools()
         self.mode_manager = ModeManager(initial_mode=OperationMode.CHAT)
         self.plan_generator = PlanGenerator()
@@ -263,7 +263,7 @@ class TinyCodeCLI:
                 console.print(f"[red]Unknown command: {cmd}[/red]")
                 console.print("[yellow]Use '/help' to see available commands or '/plugins' to see plugin commands[/yellow]")
 
-    def show_help(self):
+    def show_help(self, args=None):
         """Show help information"""
         help_text = """
         [bold cyan]Tiny Code Commands:[/bold cyan]
@@ -2458,28 +2458,31 @@ class TinyCodeCLI:
             console.print(f"[red]Error getting plugin info: {e}[/red]")
 
 @click.group(invoke_without_command=True)
+@click.option('--model', default='tinyllama:latest', help='Ollama model to use')
 @click.pass_context
-def cli(ctx):
+def cli(ctx, model):
     """Tiny Code - AI Coding Assistant"""
     if ctx.invoked_subcommand is None:
-        cli_instance = TinyCodeCLI()
+        cli_instance = TinyCodeCLI(model=model)
         cli_instance.interactive_mode()
 
 @cli.command()
 @click.argument('filepath')
 @click.option('--operation', '-o', default='explain',
               type=click.Choice(['complete', 'fix', 'explain', 'refactor', 'test', 'review', 'analyze']))
-def process(filepath, operation):
+@click.option('--model', default='tinyllama:latest', help='Ollama model to use')
+def process(filepath, operation, model):
     """Process a code file with specified operation"""
-    agent = TinyCodeAgent()
+    agent = TinyCodeAgent(model=model)
     result = agent.process_file(filepath, operation)
     console.print(result)
 
 @cli.command()
 @click.argument('filepath')
-def run(filepath):
+@click.option('--model', default='tinyllama:latest', help='Ollama model to use')
+def run(filepath, model):
     """Execute a Python file"""
-    agent = TinyCodeAgent()
+    agent = TinyCodeAgent(model=model)
     tools = CodeTools()
     code = tools.read_file(filepath)
     if code:
@@ -2487,8 +2490,9 @@ def run(filepath):
 
 @cli.command()
 @click.argument('message')
-def ask(message):
+@click.option('--model', default='tinyllama:latest', help='Ollama model to use')
+def ask(message, model):
     """Ask Tiny Code a question"""
-    agent = TinyCodeAgent()
+    agent = TinyCodeAgent(model=model)
     response = agent.chat(message)
     console.print(response)

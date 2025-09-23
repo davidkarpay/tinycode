@@ -771,7 +771,7 @@ class PlanExecutor:
                 ActionResult.SUCCESS: "[green]SUCCESS[/green]",
                 ActionResult.FAILED: "[red]FAILED[/red]",
                 ActionResult.SKIPPED: "[yellow]SKIPPED[/yellow]",
-                ActionResult.ROLLED_BACK: "[orange]ROLLED_BACK[/orange]"
+                ActionResult.ROLLED_BACK: "[dark_orange]ROLLED_BACK[/dark_orange]"
             }.get(result.result, "[white]UNKNOWN[/white]")
 
             notes = ""

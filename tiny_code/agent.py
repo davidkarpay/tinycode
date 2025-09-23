@@ -77,8 +77,9 @@ class TinyCodeAgent:
             context = self._get_capability_context(message)
             enhanced_message = f"{message}\n\nContext about my capabilities:\n{context}"
 
-        # Use enhanced system prompt with self-awareness
-        enhanced_system = SYSTEM_PROMPT + "\n\n" + self.self_awareness._generate_system_prompt()
+        # Use enhanced system prompt with self-awareness and model info
+        model_info = f"\n\nIMPORTANT: I am currently running on the {self.client.model} model via Ollama.\n"
+        enhanced_system = SYSTEM_PROMPT + model_info + self.self_awareness._generate_system_prompt()
 
         if stream:
             response_text = ""
@@ -100,7 +101,9 @@ class TinyCodeAgent:
         capability_keywords = [
             'what can', 'can you', 'do you', 'capabilities',
             'features', 'commands', 'modes', 'how do',
-            'what are your', 'list your', 'available', 'support'
+            'what are your', 'list your', 'available', 'support',
+            'what model', 'which model', 'model are you', 'running on',
+            'powered by', 'llm are you', 'language model'
         ]
         return any(kw in message.lower() for kw in capability_keywords)
 

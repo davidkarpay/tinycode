@@ -197,7 +197,7 @@ class ModeManager:
             danger_color = {
                 DangerLevel.NONE: "[green]",
                 DangerLevel.LOW: "[yellow]",
-                DangerLevel.MEDIUM: "[orange]",
+                DangerLevel.MEDIUM: "[dark_orange]",
                 DangerLevel.HIGH: "[red]",
                 DangerLevel.CRITICAL: "[bold red]"
             }.get(cmd.danger_level, "[white]")

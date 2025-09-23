@@ -21,13 +21,14 @@ console = Console()
 class RAGEnhancedCLI(TinyCodeCLI):
     """Enhanced CLI with RAG capabilities"""
 
-    def __init__(self):
-        # Initialize with RAG-enhanced agent
-        self.agent = RAGEnhancedTinyCodeAgent()
+    def __init__(self, model: str = "tinyllama:latest"):
+        # Initialize parent class first
+        super().__init__(model=model)
+
+        # Then override with RAG-enhanced agent
+        self.agent = RAGEnhancedTinyCodeAgent(model=model)
         self.tools = self.agent.tools
-        self.mode_manager = ModeManager(initial_mode=OperationMode.CHAT)
         self.history_file = Path.home() / '.tiny_code_rag_history'
-        self.last_response = None
 
     def show_help(self):
         """Show enhanced help with RAG commands"""
@@ -214,8 +215,9 @@ class RAGEnhancedCLI(TinyCodeCLI):
             console.print(f"[red]Error: {e}[/red]")
 
 @click.group(invoke_without_command=True)
+@click.option('--model', default='tinyllama:latest', help='Ollama model to use')
 @click.pass_context
-def cli(ctx):
+def cli(ctx, model):
     """Tiny Code RAG - AI Coding Assistant with RAG"""
     if ctx.invoked_subcommand is None:
         console.print(Panel.fit(
@@ -226,15 +228,16 @@ def cli(ctx):
             border_style="cyan"
         ))
 
-        cli_instance = RAGEnhancedCLI()
+        cli_instance = RAGEnhancedCLI(model=model)
         cli_instance.interactive_mode()
 
 @cli.command()
 @click.argument('path')
 @click.option('--kb', default='general', help='Knowledge base: general/genetics/code')
-def ingest(path, kb):
+@click.option('--model', default='tinyllama:latest', help='Ollama model to use')
+def ingest(path, kb, model):
     """Ingest documents into RAG system"""
-    agent = RAGEnhancedTinyCodeAgent()
+    agent = RAGEnhancedTinyCodeAgent(model=model)
     result = asyncio.run(agent.ingest_documents(path, kb))
     if result["success"]:
         console.print(f"[green]Ingested {result['documents_processed']} documents[/green]")
@@ -244,9 +247,10 @@ def ingest(path, kb):
 @cli.command()
 @click.argument('query')
 @click.option('--kb', help='Knowledge base to search')
-def search(query, kb):
+@click.option('--model', default='tinyllama:latest', help='Ollama model to use')
+def search(query, kb, model):
     """Search RAG knowledge base"""
-    agent = RAGEnhancedTinyCodeAgent()
+    agent = RAGEnhancedTinyCodeAgent(model=model)
     results = agent.rag_search(query, knowledge_base=kb)
     console.print(f"Found {len(results)} results")
 
@@ -254,26 +258,29 @@ def search(query, kb):
 @click.argument('filepath')
 @click.option('--type', 'summary_type', default='extractive', help='Summary type')
 @click.option('--length', default=500, help='Max summary length')
-def summarize(filepath, summary_type, length):
+@click.option('--model', default='tinyllama:latest', help='Ollama model to use')
+def summarize(filepath, summary_type, length, model):
     """Summarize a document"""
-    agent = RAGEnhancedTinyCodeAgent()
+    agent = RAGEnhancedTinyCodeAgent(model=model)
     summary = agent.summarize_document(filepath, summary_type, length)
     console.print(summary)
 
 @cli.command()
 @click.option('--max-pages', default=30, help='Max pages per source')
-def setup_genetics(max_pages):
+@click.option('--model', default='tinyllama:latest', help='Ollama model to use')
+def setup_genetics(max_pages, model):
     """Set up genetics knowledge base"""
-    agent = RAGEnhancedTinyCodeAgent()
+    agent = RAGEnhancedTinyCodeAgent(model=model)
     result = asyncio.run(agent.setup_genetics_knowledge(max_pages))
     console.print("Genetics knowledge base setup complete")
 
 @cli.command()
 @click.argument('question')
 @click.option('--kb', default='general', help='Knowledge base')
-def ask(question, kb):
+@click.option('--model', default='tinyllama:latest', help='Ollama model to use')
+def ask(question, kb, model):
     """Ask a question using RAG"""
-    agent = RAGEnhancedTinyCodeAgent()
+    agent = RAGEnhancedTinyCodeAgent(model=model)
     response = agent.chat_with_documents(question, kb)
     console.print(response)
 
