@@ -103,6 +103,28 @@ TinyCode includes enterprise-grade safety features:
 
 Learn more in the [Safety Guide](docs/user-guide/safety.md).
 
+## ⚠️ Security Limitations
+
+**Important**: TinyCode is a development tool, NOT a security or privacy protection system.
+
+### What TinyCode CANNOT Do
+- ❌ No user authentication or accounts
+- ❌ No data encryption or privacy protection
+- ❌ No protection from law enforcement access
+- ❌ No two-factor authentication (2FA)
+- ❌ No secure communications
+
+### What TinyCode Provides
+- ✅ Local development safety controls
+- ✅ File backups before modifications
+- ✅ Audit logging for debugging
+- ✅ Resource usage monitoring
+- ✅ Optional API key for server mode
+
+**For actual security needs, use appropriate security tools and consult security professionals.**
+
+See the [Security Documentation](docs/reference/security.md) for complete details.
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.

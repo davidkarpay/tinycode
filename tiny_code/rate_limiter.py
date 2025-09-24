@@ -21,6 +21,11 @@ class LimitType(Enum):
     FILE_OPERATION = "file_operation"
     RAG_SEARCH = "rag_search"
     API_GENERAL = "api_general"
+    # Internet search specific limits
+    INTERNET_SEARCH = "internet_search"
+    BULK_DOWNLOAD = "bulk_download"
+    DOMAIN_REQUESTS = "domain_requests"
+    WEB_SCRAPING = "web_scraping"
 
 @dataclass
 class RateLimitConfig:
@@ -39,6 +44,11 @@ class RateLimitConfig:
             LimitType.FILE_OPERATION: cls(200, 20, 60),       # 200/min, burst 20
             LimitType.RAG_SEARCH: cls(500, 50, 60),           # 500/min, burst 50
             LimitType.API_GENERAL: cls(600, 60, 60),          # 600/min, burst 60
+            # Internet search limits (more restrictive)
+            LimitType.INTERNET_SEARCH: cls(100, 10, 3600),    # 100/hour, burst 10
+            LimitType.BULK_DOWNLOAD: cls(10, 2, 3600),        # 10/hour, burst 2
+            LimitType.DOMAIN_REQUESTS: cls(50, 5, 3600),      # 50/hour per domain, burst 5
+            LimitType.WEB_SCRAPING: cls(30, 3, 3600),         # 30/hour, burst 3
         }
 
 class TokenBucket:

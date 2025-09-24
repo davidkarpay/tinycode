@@ -133,6 +133,10 @@ class TinyCodeAgent:
 
     def chat(self, message: str, stream: bool = False) -> str:
         """Interactive chat with the agent"""
+        # Check for security-related questions and provide accurate responses
+        if self._is_security_question(message):
+            return self._handle_security_question(message)
+
         # Enhance message with self-awareness if asking about capabilities
         enhanced_message = message
         if self._is_capability_question(message):
@@ -294,3 +298,126 @@ class TinyCodeAgent:
         """List files in workspace matching pattern"""
         files = list(self.workspace.glob(pattern))
         return [str(f.relative_to(self.workspace)) for f in files]
+
+    def _is_security_question(self, message: str) -> bool:
+        """Check if message is asking about security/privacy features"""
+        message_lower = message.lower()
+
+        security_keywords = [
+            'security', 'secure', 'privacy', 'private', 'protect', 'protection',
+            'encrypt', 'encryption', 'authenticate', 'authentication', 'auth',
+            '2fa', 'two-factor', 'two factor', 'lockout', 'lock out',
+            'identity', 'verification', 'verify', 'backup', 'law enforcement',
+            'police', 'government', 'surveillance', 'anonymous', 'hide',
+            'unauthorized access', 'disclosure', 'confidential', 'secret'
+        ]
+
+        return any(keyword in message_lower for keyword in security_keywords)
+
+    def _handle_security_question(self, message: str) -> str:
+        """Provide accurate response about TinyCode's security limitations"""
+
+        # Check specific question types
+        message_lower = message.lower()
+
+        if any(word in message_lower for word in ['law enforcement', 'police', 'government']):
+            return self._get_law_enforcement_response()
+        elif any(word in message_lower for word in ['encrypt', 'encryption']):
+            return self._get_encryption_response()
+        elif any(word in message_lower for word in ['2fa', 'two-factor', 'authentication']):
+            return self._get_authentication_response()
+        elif any(word in message_lower for word in ['backup', 'cloud']):
+            return self._get_backup_response()
+        else:
+            return self._get_general_security_response()
+
+    def _get_law_enforcement_response(self) -> str:
+        """Response about law enforcement protection"""
+        return """TinyCode CANNOT protect you from law enforcement access.
+
+⚠️ IMPORTANT LIMITATIONS:
+• TinyCode stores all data locally in plaintext
+• Audit logs are unencrypted and accessible
+• Legal authorities database is not protected
+• All operations are logged and traceable
+• No anonymization or privacy features exist
+
+If you need protection from law enforcement access, TinyCode is NOT the right tool. Consider consulting with privacy attorneys and using appropriate security tools designed for that purpose.
+
+TinyCode is a development assistant, not a privacy or security protection system."""
+
+    def _get_encryption_response(self) -> str:
+        """Response about encryption capabilities"""
+        return """TinyCode does NOT provide data encryption.
+
+❌ NO ENCRYPTION FOR:
+• Stored files and data
+• Audit logs
+• Legal authorities database
+• Communications with Ollama
+• User interactions or history
+
+✅ WHAT YOU CAN DO:
+• Use full-disk encryption (FileVault, BitLocker, LUKS)
+• Store sensitive files in encrypted containers
+• Use encrypted git repositories (git-crypt)
+• Keep secrets in environment variables, not code
+
+TinyCode focuses on development safety, not data security."""
+
+    def _get_authentication_response(self) -> str:
+        """Response about authentication features"""
+        return """TinyCode does NOT have user authentication systems.
+
+❌ NO AUTHENTICATION FEATURES:
+• No user accounts or passwords
+• No two-factor authentication (2FA)
+• No identity verification
+• No login/logout system
+• No account lockout mechanisms
+
+✅ LIMITED API PROTECTION:
+• Optional API key for server mode only (X-API-Key header)
+• Basic rate limiting for API endpoints
+• No authentication for CLI mode
+
+TinyCode is designed as a local development tool without user management."""
+
+    def _get_backup_response(self) -> str:
+        """Response about backup capabilities"""
+        return """TinyCode has LIMITED backup features for development safety only.
+
+✅ WHAT IT BACKS UP:
+• Files before modification (automatic)
+• Local backup in data/backups/ directory
+• Retention for 30 days by default
+
+❌ NOT A BACKUP SERVICE:
+• No cloud backup
+• No encrypted backup
+• No user data backup
+• No sync across devices
+• No protection from device loss
+
+For real backup needs, use dedicated backup solutions like Time Machine, Windows Backup, or cloud services."""
+
+    def _get_general_security_response(self) -> str:
+        """General security limitations response"""
+        return """TinyCode has LIMITED security features - it's a development tool, not a security system.
+
+❌ SECURITY LIMITATIONS:
+• No user authentication or accounts
+• No data encryption
+• No privacy protection
+• No protection from law enforcement
+• No secure communications
+• Audit logs stored in plaintext
+
+✅ DEVELOPMENT SAFETY ONLY:
+• File backup before modifications
+• Path restrictions for operations
+• Resource usage monitoring
+• Rate limiting for API mode
+• Operation logging for debugging
+
+For actual security needs, use appropriate security tools and consult security professionals."""
